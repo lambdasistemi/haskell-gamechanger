@@ -15,6 +15,13 @@ theme:
     - toc.integrate
     - content.code.copy
 
+nav:
+  - Overview: index.md
+  - Protocol: protocol.md
+  - Integration: integration.md
+  - Security: security.md
+  - Ontology: ontology.md
+
 plugins:
   - search
 
