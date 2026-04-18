@@ -1,0 +1,273 @@
+@prefix gc: <https://lambdasistemi.github.io/haskell-gamechanger/vocab/terms#> .
+@prefix gckind: <https://lambdasistemi.github.io/haskell-gamechanger/vocab/kinds#> .
+@prefix gb: <https://lambdasistemi.github.io/graph-browser/vocab/terms#> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix owl: <http://www.w3.org/2002/07/owl#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+@prefix xsd: <http://www.w3.org/2001/XMLSchema#> .
+
+<https://lambdasistemi.github.io/haskell-gamechanger/vocab/ontology> a owl:Ontology ;
+  rdfs:label "haskell-gamechanger GameChanger protocol vocabulary" ;
+  dcterms:description "Domain ontology for the GameChanger Cardano wallet protocol: scripts, actions, exports, channels, sessions, trust boundaries, attacks, mitigations, and integration topologies." ;
+  owl:imports <https://lambdasistemi.github.io/graph-browser/vocab/ontology> ;
+  owl:versionInfo "0.1.0" .
+
+##
+## ========= Kinds (subclasses of gb:Node for graph-browser display) =========
+##
+
+gckind:concept a owl:Class ;
+  rdfs:label "Concept" ;
+  gb:kindId "concept" ;
+  gb:color "#56d364" ;
+  gb:shape "star" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:actor a owl:Class ;
+  rdfs:label "Actor" ;
+  gb:kindId "actor" ;
+  gb:color "#58a6ff" ;
+  gb:shape "round-rectangle" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:script a owl:Class ;
+  rdfs:label "Script" ;
+  gb:kindId "script" ;
+  gb:color "#d2a8ff" ;
+  gb:shape "round-hexagon" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:action a owl:Class ;
+  rdfs:label "Action" ;
+  gb:kindId "action" ;
+  gb:color "#e3b341" ;
+  gb:shape "round-pentagon" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:export a owl:Class ;
+  rdfs:label "Export" ;
+  gb:kindId "export" ;
+  gb:color "#f0883e" ;
+  gb:shape "diamond" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:channel a owl:Class ;
+  rdfs:label "Channel" ;
+  gb:kindId "channel" ;
+  gb:color "#f778ba" ;
+  gb:shape "round-octagon" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:boundary a owl:Class ;
+  rdfs:label "Trust boundary" ;
+  gb:kindId "boundary" ;
+  gb:color "#ff7b72" ;
+  gb:shape "barrel" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:topology a owl:Class ;
+  rdfs:label "Topology" ;
+  gb:kindId "topology" ;
+  gb:color "#79c0ff" ;
+  gb:shape "ellipse" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:attack a owl:Class ;
+  rdfs:label "Attack vector" ;
+  gb:kindId "attack" ;
+  gb:color "#e55353" ;
+  gb:shape "triangle" ;
+  rdfs:subClassOf gb:Node .
+
+gckind:mitigation a owl:Class ;
+  rdfs:label "Mitigation" ;
+  gb:kindId "mitigation" ;
+  gb:color "#3fb950" ;
+  gb:shape "rectangle" ;
+  rdfs:subClassOf gb:Node .
+
+##
+## ========= Domain classes =========
+##
+
+gc:Script a owl:Class ;
+  rdfs:label "Script" ;
+  dcterms:description "A GameChanger JSON script describing intent and result channels." ;
+  rdfs:subClassOf gckind:script .
+
+gc:Action a owl:Class ;
+  rdfs:label "Action" ;
+  dcterms:description "A typed operation executed by the wallet inside a script's run block (e.g. buildTx, signTx, signData, submitTx, getUTxOs)." ;
+  rdfs:subClassOf gckind:action .
+
+gc:Export a owl:Class ;
+  rdfs:label "Export" ;
+  dcterms:description "A declaration in a script specifying how a result leaves the wallet." ;
+  rdfs:subClassOf gckind:export .
+
+gc:Channel a owl:Class ;
+  rdfs:label "Channel" ;
+  dcterms:description "A mechanism by which an export delivers its result: return, post, download, qr, copy." ;
+  rdfs:subClassOf gckind:channel .
+
+gc:Wallet a owl:Class ;
+  rdfs:label "Wallet" ;
+  dcterms:description "The GameChanger browser wallet. Sole key-holder in the protocol." ;
+  rdfs:subClassOf gckind:actor .
+
+gc:Issuer a owl:Class ;
+  rdfs:label "Script issuer" ;
+  dcterms:description "The party (typically a Haskell backend) that authors scripts and encodes resolver URLs." ;
+  rdfs:subClassOf gckind:actor .
+
+gc:User a owl:Class ;
+  rdfs:label "User" ;
+  dcterms:description "The human who holds keys in the wallet and confirms in-wallet." ;
+  rdfs:subClassOf gckind:actor .
+
+gc:Backend a owl:Class ;
+  rdfs:label "Callback backend" ;
+  dcterms:description "HTTP endpoint that receives post-export callbacks from the wallet." ;
+  rdfs:subClassOf gckind:actor .
+
+gc:ResolverUrl a owl:Class ;
+  rdfs:label "Resolver URL" ;
+  dcterms:description "The gamechanger.finance URL carrying a gzip+base64url-encoded script." ;
+  rdfs:subClassOf gckind:concept .
+
+gc:Session a owl:Class ;
+  rdfs:label "Session" ;
+  dcterms:description "A backend-minted correlation token binding a resolver URL to an expected callback." ;
+  rdfs:subClassOf gckind:concept .
+
+gc:SignedResult a owl:Class ;
+  rdfs:label "Signed result" ;
+  dcterms:description "The CBOR-encoded signed output returned by the wallet via an export." ;
+  rdfs:subClassOf gckind:concept .
+
+gc:TrustBoundary a owl:Class ;
+  rdfs:label "Trust boundary" ;
+  dcterms:description "A point at which one principal must authenticate or validate data from another." ;
+  rdfs:subClassOf gckind:boundary .
+
+gc:IntegrationTopology a owl:Class ;
+  rdfs:label "Integration topology" ;
+  dcterms:description "A named way of composing issuer, wallet, and destination: client-only, client+backend, backend-only." ;
+  rdfs:subClassOf gckind:topology .
+
+gc:Attack a owl:Class ;
+  rdfs:label "Attack" ;
+  dcterms:description "A way the protocol or an integration can be abused." ;
+  rdfs:subClassOf gckind:attack .
+
+gc:Mitigation a owl:Class ;
+  rdfs:label "Mitigation" ;
+  dcterms:description "A control that reduces the likelihood or impact of an attack." ;
+  rdfs:subClassOf gckind:mitigation .
+
+##
+## ========= Properties =========
+##
+
+gc:hasAction a owl:ObjectProperty ;
+  rdfs:label "has action" ;
+  rdfs:domain gc:Script ;
+  rdfs:range gc:Action ;
+  dcterms:description "Script declares a run-block action." .
+
+gc:hasExport a owl:ObjectProperty ;
+  rdfs:label "has export" ;
+  rdfs:domain gc:Script ;
+  rdfs:range gc:Export ;
+  dcterms:description "Script declares an export." .
+
+gc:via a owl:ObjectProperty ;
+  rdfs:label "via" ;
+  rdfs:domain gc:Export ;
+  rdfs:range gc:Channel ;
+  dcterms:description "An export delivers through a channel." .
+
+gc:deliversTo a owl:ObjectProperty ;
+  rdfs:label "delivers to" ;
+  rdfs:domain gc:Channel ;
+  rdfs:range gckind:actor ;
+  dcterms:description "The party that receives results through this channel." .
+
+gc:issues a owl:ObjectProperty ;
+  rdfs:label "issues" ;
+  rdfs:domain gc:Issuer ;
+  rdfs:range gc:ResolverUrl ;
+  dcterms:description "An issuer produces a resolver URL." .
+
+gc:encodes a owl:ObjectProperty ;
+  rdfs:label "encodes" ;
+  rdfs:domain gc:ResolverUrl ;
+  rdfs:range gc:Script ;
+  dcterms:description "A resolver URL encodes a specific script." .
+
+gc:mints a owl:ObjectProperty ;
+  rdfs:label "mints" ;
+  rdfs:domain gc:Backend ;
+  rdfs:range gc:Session ;
+  dcterms:description "The backend creates a session token per sign request." .
+
+gc:binds a owl:ObjectProperty ;
+  rdfs:label "binds" ;
+  rdfs:domain gc:Session ;
+  rdfs:range gc:ResolverUrl ;
+  dcterms:description "A session is bound to a specific resolver URL." .
+
+gc:produces a owl:ObjectProperty ;
+  rdfs:label "produces" ;
+  rdfs:domain gc:Wallet ;
+  rdfs:range gc:SignedResult ;
+  dcterms:description "The wallet produces a signed result when the user confirms." .
+
+gc:crosses a owl:ObjectProperty ;
+  rdfs:label "crosses" ;
+  rdfs:domain gckind:actor ;
+  rdfs:range gc:TrustBoundary ;
+  dcterms:description "A data flow crosses a trust boundary." .
+
+gc:uses a owl:ObjectProperty ;
+  rdfs:label "uses" ;
+  rdfs:domain gc:IntegrationTopology ;
+  rdfs:range gc:Channel ;
+  dcterms:description "A topology relies on a specific channel." .
+
+gc:exploits a owl:ObjectProperty ;
+  rdfs:label "exploits" ;
+  rdfs:domain gc:Attack ;
+  rdfs:range gckind:concept ;
+  dcterms:description "An attack exploits a weakness at some concept." .
+
+gc:mitigates a owl:ObjectProperty ;
+  rdfs:label "mitigates" ;
+  rdfs:domain gc:Mitigation ;
+  rdfs:range gc:Attack ;
+  dcterms:description "A control mitigates an attack." .
+
+##
+## ========= Channel individuals (the five modes) =========
+##
+
+gc:channel-return a gc:Channel ;
+  rdfs:label "return" ;
+  dcterms:description "Result appended to a redirect URL." .
+
+gc:channel-post a gc:Channel ;
+  rdfs:label "post" ;
+  dcterms:description "Browser-side HTTP POST to a backend endpoint." .
+
+gc:channel-download a gc:Channel ;
+  rdfs:label "download" ;
+  dcterms:description "Browser downloads the result as a file." .
+
+gc:channel-qr a gc:Channel ;
+  rdfs:label "qr" ;
+  dcterms:description "Result displayed as a QR code on-screen." .
+
+gc:channel-copy a gc:Channel ;
+  rdfs:label "copy" ;
+  dcterms:description "Result placed on the clipboard." .

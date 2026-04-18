@@ -1,0 +1,22 @@
+{
+  "title": "GameChanger Protocol Model",
+  "description": "Conceptual model of the GameChanger Cardano wallet protocol: scripts, actions, exports, sessions, trust boundaries, and integration topologies.",
+  "sourceUrl": "https://github.com/lambdasistemi/haskell-gamechanger",
+  "graphSources": [
+    { "format": "text/turtle", "path": "data/rdf/graph.ttl" },
+    { "format": "text/turtle", "path": "data/rdf/core-ontology.ttl" },
+    { "format": "text/turtle", "path": "data/rdf/gamechanger-ontology.ttl" }
+  ],
+  "kinds": {
+    "concept": { "label": "Concept", "color": "#56d364", "shape": "star" },
+    "actor": { "label": "Actor", "color": "#58a6ff", "shape": "round-rectangle" },
+    "script": { "label": "Script", "color": "#d2a8ff", "shape": "round-hexagon" },
+    "action": { "label": "Action", "color": "#e3b341", "shape": "round-pentagon" },
+    "export": { "label": "Export", "color": "#f0883e", "shape": "diamond" },
+    "channel": { "label": "Channel", "color": "#f778ba", "shape": "round-octagon" },
+    "boundary": { "label": "Trust boundary", "color": "#ff7b72", "shape": "barrel" },
+    "topology": { "label": "Topology", "color": "#79c0ff", "shape": "ellipse" },
+    "attack": { "label": "Attack vector", "color": "#e55353", "shape": "triangle" },
+    "mitigation": { "label": "Mitigation", "color": "#3fb950", "shape": "rectangle" }
+  }
+}

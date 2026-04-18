@@ -1,0 +1,126 @@
+@prefix gc: <https://lambdasistemi.github.io/haskell-gamechanger/vocab/terms#> .
+@prefix ex: <https://github.com/lambdasistemi/haskell-gamechanger/rdf/node/> .
+@prefix edge: <https://github.com/lambdasistemi/haskell-gamechanger/rdf/edge/> .
+@prefix rdf: <http://www.w3.org/1999/02/22-rdf-syntax-ns#> .
+@prefix rdfs: <http://www.w3.org/2000/01/rdf-schema#> .
+@prefix dcterms: <http://purl.org/dc/terms/> .
+
+##
+## Worked example: client + backend-callback topology.
+## One issuer backend, one user+wallet, one signed result, one callback.
+##
+
+# ---- Actors ----
+
+ex:backend a gc:Issuer, gc:Backend ;
+  rdfs:label "Haskell backend" ;
+  dcterms:description "Authors scripts, mints sessions, issues resolver URLs, receives post-export callbacks, submits to chain." .
+
+ex:user a gc:User ;
+  rdfs:label "End user" ;
+  dcterms:description "Holds keys in the wallet. Confirms the transaction in the wallet UI." .
+
+ex:wallet a gc:Wallet ;
+  rdfs:label "GameChanger wallet" ;
+  dcterms:description "Browser wallet. Sole key-holder. Executes the script and dispatches exports." .
+
+# ---- Script and its parts ----
+
+ex:script-sign-tx a gc:Script ;
+  rdfs:label "Sign preprod tx" ;
+  dcterms:description "Example script that builds and signs a preprod transaction, returning the CBOR via the post export." .
+
+ex:action-build-tx a gc:Action ;
+  rdfs:label "buildTx" ;
+  dcterms:description "Assembles the Cardano transaction inputs/outputs declared in the script." .
+
+ex:action-sign-tx a gc:Action ;
+  rdfs:label "signTx" ;
+  dcterms:description "Produces a signed CBOR of the assembled transaction." .
+
+ex:export-signed a gc:Export ;
+  rdfs:label "signed-cbor export" ;
+  dcterms:description "Export of the signed CBOR through the post channel to the backend callback endpoint." .
+
+# ---- Protocol concepts ----
+
+ex:session-t1 a gc:Session ;
+  rdfs:label "Session T1" ;
+  dcterms:description "Per-request session token, single-use, short TTL, bound to the resolver URL." .
+
+ex:resolver-url a gc:ResolverUrl ;
+  rdfs:label "Resolver URL" ;
+  dcterms:description "gzip + base64url-encoded script, handed to the user as a link the browser opens." .
+
+ex:signed-result a gc:SignedResult ;
+  rdfs:label "Signed CBOR" ;
+  dcterms:description "CBOR bytes produced by the wallet after user confirmation." .
+
+ex:boundary-issuer-wallet a gc:TrustBoundary ;
+  rdfs:label "Issuer → Wallet boundary" ;
+  dcterms:description "Where the backend's script reaches the wallet across the user's browser." .
+
+ex:boundary-wallet-backend a gc:TrustBoundary ;
+  rdfs:label "Wallet → Backend boundary" ;
+  dcterms:description "Where the signed result reaches the backend callback endpoint." .
+
+ex:topology-client-backend a gc:IntegrationTopology ;
+  rdfs:label "Client + backend callback" ;
+  dcterms:description "Backend issues the URL, wallet POSTs the signed result back. This library's primary target." .
+
+# ---- Security model entries ----
+
+ex:attack-spoof-callback a gc:Attack ;
+  rdfs:label "Callback spoofing" ;
+  dcterms:description "Forged POST of a fabricated signed result to the backend callback endpoint." .
+
+ex:attack-replay-tx a gc:Attack ;
+  rdfs:label "Signed-tx replay" ;
+  dcterms:description "A captured signed CBOR is resubmitted later to double-spend or re-trigger an effect." .
+
+ex:attack-phish-url a gc:Attack ;
+  rdfs:label "Phishing via crafted URL" ;
+  dcterms:description "A lookalike resolver URL persuades the user to sign something unintended." .
+
+ex:mitigation-session-binding a gc:Mitigation ;
+  rdfs:label "Session binding" ;
+  dcterms:description "Single-use session tokens bound to the resolver URL; short TTL; validated on callback." .
+
+ex:mitigation-on-chain-check a gc:Mitigation ;
+  rdfs:label "On-chain presence check" ;
+  dcterms:description "Before resubmitting, check whether the tx is already on-chain. Idempotent submission path." .
+
+ex:mitigation-wallet-confirm a gc:Mitigation ;
+  rdfs:label "In-wallet confirmation" ;
+  dcterms:description "User must confirm the plain-language transaction preview in the wallet UI before signing." .
+
+##
+## ========= Edges (domain-specific relationships) =========
+##
+
+ex:script-sign-tx gc:hasAction ex:action-build-tx .
+ex:script-sign-tx gc:hasAction ex:action-sign-tx .
+ex:script-sign-tx gc:hasExport ex:export-signed .
+
+ex:export-signed gc:via gc:channel-post .
+gc:channel-post gc:deliversTo ex:backend .
+
+ex:backend gc:mints ex:session-t1 .
+ex:backend gc:issues ex:resolver-url .
+ex:session-t1 gc:binds ex:resolver-url .
+ex:resolver-url gc:encodes ex:script-sign-tx .
+
+ex:wallet gc:produces ex:signed-result .
+
+ex:backend gc:crosses ex:boundary-issuer-wallet .
+ex:wallet gc:crosses ex:boundary-wallet-backend .
+
+ex:topology-client-backend gc:uses gc:channel-post .
+
+ex:attack-spoof-callback gc:exploits ex:boundary-wallet-backend .
+ex:attack-replay-tx gc:exploits ex:signed-result .
+ex:attack-phish-url gc:exploits ex:resolver-url .
+
+ex:mitigation-session-binding gc:mitigates ex:attack-spoof-callback .
+ex:mitigation-on-chain-check gc:mitigates ex:attack-replay-tx .
+ex:mitigation-wallet-confirm gc:mitigates ex:attack-phish-url .

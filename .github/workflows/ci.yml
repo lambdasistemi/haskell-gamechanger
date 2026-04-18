@@ -16,5 +16,14 @@ jobs:
     runs-on: nixos
     steps:
       - uses: actions/checkout@v4
-      - name: Stub CI
-        run: echo "CI stub — will be replaced by real CI"
+      - name: Build dev shell
+        run: nix build --quiet '.#devShells.x86_64-linux.default.inputDerivation'
+
+  docs:
+    name: Docs (strict build)
+    needs: build-gate
+    runs-on: nixos
+    steps:
+      - uses: actions/checkout@v4
+      - name: Build docs
+        run: nix develop --quiet -c just build-docs

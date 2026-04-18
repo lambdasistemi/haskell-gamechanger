@@ -1,0 +1,43 @@
+{
+  "id": "overview",
+  "title": "GameChanger protocol overview",
+  "description": "A guided walk through the core concepts of the GameChanger protocol: who the actors are, how a script flows from issuer to wallet to backend, and where the trust boundaries sit.",
+  "stops": [
+    {
+      "id": "stop-actors",
+      "title": "The three actors",
+      "narrative": "There are three parties in any GameChanger integration: an [Issuer](node:backend) (typically a Haskell backend) that builds scripts, a [Wallet](node:wallet) that holds keys and performs signing, and a [User](node:user) who confirms the operation in the wallet UI.\n\nNotice that only the wallet touches keys. Everything else in this graph — issuer, backend, signed result, callback — sees data, never secrets.",
+      "focus": ["backend", "wallet", "user"]
+    },
+    {
+      "id": "stop-script",
+      "title": "The script is the protocol",
+      "narrative": "The [script](node:script-sign-tx) is a JSON document declaring two things: what actions to run and where their results should go.\n\nHere the script has two [actions](node:action-build-tx) — [buildTx](node:action-build-tx) and [signTx](node:action-sign-tx) — plus a single [export](node:export-signed).",
+      "focus": ["script-sign-tx", "action-build-tx", "action-sign-tx", "export-signed"]
+    },
+    {
+      "id": "stop-encoding",
+      "title": "Script becomes URL",
+      "narrative": "The backend encodes the script into a [resolver URL](node:resolver-url) (JSON → gzip → base64url). The user's browser opens that URL. The script's content is fully visible in the URL — treat it as public data.",
+      "focus": ["resolver-url", "script-sign-tx"]
+    },
+    {
+      "id": "stop-session",
+      "title": "Session binding",
+      "narrative": "Before issuing the URL, the backend [mints](edge:gc:mints) a per-request [Session](node:session-t1) and binds it to the resolver URL. When the callback arrives, the backend checks the session is valid, single-use, and unexpired. Without this, callbacks are unauthenticated.",
+      "focus": ["session-t1", "resolver-url", "backend"]
+    },
+    {
+      "id": "stop-export",
+      "title": "Result via the post channel",
+      "narrative": "The script's [export](node:export-signed) uses the [post channel](node:channel-post): a browser-side HTTP POST to the backend's callback endpoint. This is the only way a non-browser process observes the signature.",
+      "focus": ["export-signed", "channel-post", "backend"]
+    },
+    {
+      "id": "stop-security",
+      "title": "Attacks and mitigations",
+      "narrative": "Three attack vectors bound to this topology: [callback spoofing](node:attack-spoof-callback), [replay of the signed tx](node:attack-replay-tx), and [phishing via a crafted URL](node:attack-phish-url). Each is [mitigated](edge:gc:mitigates) by a specific control: session binding, on-chain presence checks, and the wallet's in-UI confirmation.",
+      "focus": ["attack-spoof-callback", "attack-replay-tx", "attack-phish-url", "mitigation-session-binding", "mitigation-on-chain-check", "mitigation-wallet-confirm"]
+    }
+  ]
+}
