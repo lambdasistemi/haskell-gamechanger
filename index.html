@@ -14,6 +14,8 @@
       
       
       
+        <link rel="next" href="protocol/">
+      
       
         
       
@@ -108,7 +110,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              haskell-gamechanger
+              Overview
             
           </span>
         </div>
@@ -239,6 +241,24 @@
         
       
       
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Overview
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
       <a href="." class="md-nav__link md-nav__link--active">
         
   
@@ -246,7 +266,7 @@
   <span class="md-ellipsis">
     
   
-    haskell-gamechanger
+    Overview
   
 
     
@@ -256,6 +276,204 @@
 
       </a>
       
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-is-gamechanger" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What is GameChanger?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-a-haskell-client" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why a Haskell client?
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#where-to-start" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Where to start
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#links" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Links
+      
+    </span>
+  </a>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="protocol/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Protocol
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="integration/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Integration
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="security/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Security
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="intent-dsl/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Intent eDSL
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
+      <a href="ontology/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Ontology
+  
+
+    
+  </span>
+  
+  
+
+      </a>
     </li>
   
 
@@ -289,15 +507,74 @@
 
 
 <h1 id="haskell-gamechanger">haskell-gamechanger</h1>
-<p>Haskell client for the <a href="https://gamechanger.finance/">GameChanger</a>
+<p>A Haskell client for the <a href="https://gamechanger.finance/">GameChanger</a>
 Cardano wallet.</p>
 <div class="admonition info">
-<p class="admonition-title">Bootstrap page</p>
-<p>This is a placeholder. The real documentation (protocol, integration,
-security, ontology) lands in the next PR. See the
-<a href="https://github.com/lambdasistemi/haskell-gamechanger">repository</a>
-for open work.</p>
+<p class="admonition-title">Status: Understanding phase</p>
+<p>The repository currently carries no Haskell implementation. Its
+first output is a clear, machine-readable model of the GameChanger
+protocol: this documentation site, a companion
+<a href="ontology/">RDF ontology</a>, and a
+<a href="security/">security analysis</a>. Implementation follows once the
+model is stable.</p>
 </div>
+<h2 id="what-is-gamechanger">What is GameChanger?</h2>
+<p>GameChanger is a <strong>browser-based Cardano wallet</strong> driven by an open,
+URL-encoded signing protocol. Instead of a CIP-30 JavaScript injection
+into a dapp page, GameChanger consumes a JSON <strong>script descriptor</strong>
+that declares what to do (build a transaction, sign a message, run a
+multi-step flow) and how to return the result. The protocol is
+deliberately asynchronous: the wallet does not "respond" in a
+request/response sense; it executes the script and then <em>exports</em> the
+result via one of several named channels.</p>
+<p>This makes GameChanger an unusually clean fit for backend
+integrations: any party able to build JSON and receive HTTP POSTs can
+drive signing flows without running a browser.</p>
+<h2 id="why-a-haskell-client">Why a Haskell client?</h2>
+<p>Because the Haskell side of this repository's ecosystem
+(cardano-wallet, cardano-api, node-clients, MPFS, MOOG) routinely
+needs to produce transactions that are signed by real end-users
+holding real keys, and GameChanger is a pragmatic way to request
+signatures from those users without forcing them through a desktop
+wallet install or a bespoke UI.</p>
+<p>What Haskell can do:</p>
+<ul>
+<li>Build GameChanger scripts as typed records, serialize to JSON.</li>
+<li>Encode scripts into resolver URLs (gzip + base64url).</li>
+<li>Render URLs as QR codes for out-of-band delivery.</li>
+<li>Receive <code>post</code> export callbacks, validate CBOR, submit
+  transactions through existing node-clients paths.</li>
+</ul>
+<p>What Haskell cannot do:</p>
+<ul>
+<li><strong>Sign.</strong> Keys live in the wallet. Signing requires the user's
+  browser. This is a protocol invariant, not a Haskell limitation —
+  the same constraint applies to every external-wallet integration.</li>
+</ul>
+<h2 id="where-to-start">Where to start</h2>
+<ul>
+<li><strong>New to GameChanger?</strong> Read <a href="protocol/">Protocol</a> — it covers
+  the script DSL, the encoding pipeline, and export modes.</li>
+<li><strong>Planning to integrate?</strong> Read <a href="integration/">Integration</a> —
+  three canonical topologies with trade-offs.</li>
+<li><strong>Responsible for a deployment?</strong> Read
+  <a href="security/">Security</a> — threat model, attack surface, and known
+  published audits.</li>
+<li><strong>Designing the Haskell API?</strong> Read
+  <a href="intent-dsl/">Intent eDSL</a> — the monadic surface that compiles
+  to GameChanger scripts, deployable natively and as WASM.</li>
+<li><strong>Browsing visually?</strong> Open the
+  <a href="https://lambdasistemi.github.io/graph-browser/?repo=lambdasistemi/haskell-gamechanger">graph view</a>
+  — the same concepts as a node-link diagram, backed by a
+  <a href="ontology/">Turtle ontology</a>.</li>
+</ul>
+<h2 id="links">Links</h2>
+<ul>
+<li><a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/.specify/memory/constitution.md">Constitution</a> — authoritative source for this documentation</li>
+<li><a href="https://github.com/lambdasistemi/haskell-gamechanger">Repository</a></li>
+<li><a href="https://docs.gamechanger.finance/">GameChanger official docs</a></li>
+<li><a href="https://beta-wallet.gamechanger.finance/">GameChanger beta wallet</a></li>
+</ul>
 
 
 
