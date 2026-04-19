@@ -146,6 +146,17 @@ gc:SignedResult a owl:Class ;
   dcterms:description "The CBOR-encoded signed output returned by the wallet via an export." ;
   rdfs:subClassOf gckind:concept .
 
+gc:IntentProgram a owl:Class ;
+  rdfs:label "Intent program" ;
+  dcterms:description "A Haskell operational-monad expression in GameChanger.Intent that compiles deterministically to a gc:Script. A surface layer with typed bindings for {get(...)} references and ordinary Haskell combinators for composition; adds no wallet semantics beyond the published DSL." ;
+  rdfs:subClassOf gckind:concept .
+
+gc:compilesTo a owl:ObjectProperty ;
+  rdfs:label "compiles to" ;
+  rdfs:domain gc:IntentProgram ;
+  rdfs:range gc:Script ;
+  dcterms:description "An Intent program compiles to a GameChanger Script. Compilation is pure and deterministic." .
+
 gc:TrustBoundary a owl:Class ;
   rdfs:label "Trust boundary" ;
   dcterms:description "A point at which one principal must authenticate or validate data from another." ;

@@ -20,6 +20,7 @@ nav:
   - Protocol: protocol.md
   - Integration: integration.md
   - Security: security.md
+  - Intent eDSL: intent-dsl.md
   - Ontology: ontology.md
 
 plugins:

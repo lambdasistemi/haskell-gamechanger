@@ -58,6 +58,9 @@ What Haskell cannot do:
 - **Responsible for a deployment?** Read
   [Security](./security.md) — threat model, attack surface, and known
   published audits.
+- **Designing the Haskell API?** Read
+  [Intent eDSL](./intent-dsl.md) — the monadic surface that compiles
+  to GameChanger scripts, deployable natively and as WASM.
 - **Browsing visually?** Open the
   [graph view](https://lambdasistemi.github.io/graph-browser/?repo=lambdasistemi/haskell-gamechanger)
   — the same concepts as a node-link diagram, backed by a
