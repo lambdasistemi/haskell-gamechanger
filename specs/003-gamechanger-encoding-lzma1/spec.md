@@ -1,4 +1,4 @@
-# Feature Specification: GameChanger.Encoding — LZMA1 + base64url + resolver URL
+# Feature Specification: GameChanger.Encoding — LZMA alone + base64url + resolver URL
 
 **Feature Branch**: `003-gamechanger-encoding-lzma1`
 **Created**: 2026-04-20
@@ -6,9 +6,14 @@
 **Tracks**: [#7](https://github.com/lambdasistemi/haskell-gamechanger/issues/7)
 **Input**: The on-wire encoding pipeline that turns a `Script` into a
 URL the live GameChanger wallet accepts. Per SC-005 on [#6 / PR #16](https://github.com/lambdasistemi/haskell-gamechanger/pull/16),
-the wallet speaks **raw LZMA1 + base64url at `/api/2/run/`**, not gzip +
-`/api/2/tx/` as the old `docs/protocol.md` sketch said. This ticket
-replaces the sketch with the real format.
+the wallet speaks **legacy `.lzma` "alone" format + base64url at
+`/api/2/run/`**, not gzip + `/api/2/tx/` as the old `docs/protocol.md`
+sketch said. (Decoding a known-good URL from the wallet's public docs
+shows a 13-byte header `5d 00 00 00 02 XX XX XX XX XX XX XX XX`: one
+properties byte `0x5D`, four-byte dictionary size `0x02000000` (32 MiB)
+little-endian, eight-byte uncompressed size little-endian. This is the
+classic `lzma_alone_encoder` format — pre-`.xz` LZMA utility.)
+This ticket replaces the sketch with the real format.
 
 ## User Scenarios & Testing
 
@@ -38,7 +43,7 @@ or schema error. Also: decode-encode round-trip on arbitrary Scripts.
 2. **Given** a known-good URL copied from the GameChanger public docs,
    **when** `decodeResolverUrl url` is called, **then** it returns
    `Right s` where `s` decodes to the published JSON shape.
-3. **Given** a URL whose compression header is not raw LZMA1, **when**
+3. **Given** a URL whose compression header is not LZMA alone, **when**
    `decodeResolverUrl url` is called, **then** it returns `Left
    BadCompressionHeader`.
 
@@ -119,7 +124,7 @@ descriptions. The Haskell sketch block should use LZMA.
 **Acceptance Scenarios**:
 
 1. **Given** the merged PR, **when** `docs/protocol.md` is read,
-   **then** the "Encoding pipeline" section describes raw LZMA1 and
+   **then** the "Encoding pipeline" section describes LZMA alone and
    the path is `/api/2/run/`.
 2. **Given** the merged PR, **when** the Haskell sketch is read,
    **then** it calls an LZMA1 encoder (not `Codec.Compression.GZip`).
@@ -161,11 +166,13 @@ descriptions. The Haskell sketch block should use LZMA.
 - **FR-002**: `decodeResolverUrl :: ResolverUrl -> Either DecodeError
   Script` MUST reject URLs that don't match the expected prefix with
   `BadResolverPrefix`.
-- **FR-003**: The raw LZMA1 parameters MUST match what the wallet
-  emits byte-for-byte for small payloads: properties byte `0x5D`
-  (default `lc=3, lp=0, pb=2`), dictionary size `0x02000000` (32 KB,
-  little-endian), no uncompressed-size field (i.e. the LZMA1 "stream
-  end" marker is used).
+- **FR-003**: The LZMA "alone" header MUST match what the wallet emits
+  byte-for-byte for small payloads: 1-byte properties `0x5D` (default
+  `lc=3, lp=0, pb=2`), 4-byte dictionary size `0x02000000` = 32 MiB
+  (little-endian), 8-byte uncompressed size (little-endian, set to the
+  exact payload length since the encoder has the whole input in
+  memory). This is the `lzma_alone_encoder` format from liblzma (also
+  produced by `lzma` / `xz --format=lzma` command-line tools).
 - **FR-004**: The `Environment` type MUST cover at minimum `Mainnet`
   (`wallet.gamechanger.finance`), `BetaMainnet`
   (`beta-wallet.gamechanger.finance`), and `BetaPreprod`
@@ -184,7 +191,7 @@ descriptions. The Haskell sketch block should use LZMA.
 - **FR-008**: The decoder MUST accept base64url with or without
   padding. The encoder MUST emit unpadded base64url.
 - **FR-009**: The decoder MUST NOT fall back to gzip. Inputs whose
-  decompression header is not raw LZMA1 MUST be rejected with
+  decompression header is not LZMA alone MUST be rejected with
   `BadCompression`.
 - **FR-010**: `docs/protocol.md` MUST describe the real format (LZMA1,
   `/api/2/run/`) in the same commit that introduces the encoder —
@@ -227,7 +234,7 @@ descriptions. The Haskell sketch block should use LZMA.
 
 ## Assumptions
 
-- **A1** — The raw LZMA1 format is the format the wallet's
+- **A1** — The LZMA alone format is the format the wallet's
   `lzma-native.js` or `lzma-js` frontend library accepts. If the
   wallet migrates to xz or a newer variant, this ticket's encoder
   will need to follow; that's a future concern.
