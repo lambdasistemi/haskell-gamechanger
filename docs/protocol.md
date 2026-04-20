@@ -74,28 +74,45 @@ Scripts may declare multiple exports; they are all performed.
 The script never travels as plain JSON. Clients encode it like this:
 
 ```
-JSON  ──gzip──►  bytes  ──base64url──►  ascii  ──prepend──►  resolver URL
+JSON  ──lzma-alone──►  bytes  ──base64url──►  ascii  ──prepend──►  resolver URL
 ```
 
 The final URL looks like:
 
 ```
-https://beta-wallet.gamechanger.finance/api/2/tx/<base64url-of-gzipped-json>
+https://beta-preprod-wallet.gamechanger.finance/api/2/run/<base64url-of-lzma-alone-encoded-json>
 ```
 
-or the mainnet resolver path:
+The base64 payload always starts with `XQ` — the base64 encoding of
+the LZMA-alone properties byte (`0x5D`) followed by the top of the
+little-endian dictionary-size field (`0x00`).
 
-```
-https://gamechanger.finance/resolver/<base64url-of-gzipped-json>
-```
+### The `.lzma` alone container (13-byte header)
+
+The compressed body is not raw LZMA1 and not `.xz`. It is the legacy
+`.lzma` "alone" container: a 13-byte header followed by an LZMA1
+stream, with no end-of-stream marker beyond the uncompressed-size
+field in the header.
+
+| Offset | Size | Field              | Value                                |
+| ------ | ---- | ------------------ | ------------------------------------ |
+| 0      | 1    | properties         | `0x5D` (lc=3, lp=0, pb=2 — defaults) |
+| 1      | 4    | dictionary size    | `0x02000000` LE = 32 MiB             |
+| 5      | 8    | uncompressed size  | byte length of the JSON payload, LE  |
+
+`liblzma`'s `lzma_alone_encoder` emits exactly this layout, with one
+caveat: for streaming input it writes `0xFF…FF` in the
+uncompressed-size field ("unknown"). The wallet's decoder rejects
+that marker, so the encoder patches bytes 5–12 with the actual length
+before handing the buffer off.
 
 ### Properties
 
-- **gzip** — standard gzip format, not raw deflate. Any language with
-  a gzip library round-trips. Add/remove standard headers; no custom
-  magic.
+- **lzma-alone** — legacy `.lzma` format, not `.xz`. Any `liblzma`
+  build exposes it via `lzma_alone_encoder`; no custom magic. The
+  GameChanger wallet detects this variant from its `XQ` header.
 - **base64url** — URL-safe alphabet (`-`, `_` substitutions), padding
-  (`=`) typically stripped.
+  (`=`) stripped.
 - **Size threshold** — beyond a certain size the script does not fit
   in a URL and has to be hosted (the URL then references the hosted
   blob). This project targets the inline form; hosted scripts are a
@@ -103,22 +120,32 @@ https://gamechanger.finance/resolver/<base64url-of-gzipped-json>
 
 ### Haskell sketch
 
-```haskell
-import Codec.Compression.GZip (compress)
-import Data.ByteString.Base64.URL (encodeBase64Unpadded)
-import qualified Data.Aeson as Aeson
+The implementation lives in
+[`GameChanger.Encoding`](https://github.com/lambdasistemi/haskell-gamechanger/blob/main/src/GameChanger/Encoding.hs).
+The pipeline is:
 
-encodeScript :: Script -> Text
-encodeScript =
-      ("https://beta-wallet.gamechanger.finance/api/2/tx/" <>)
-    . encodeBase64Unpadded
-    . Lazy.toStrict
-    . compress
-    . Aeson.encode
+```haskell
+import qualified Data.Aeson as Aeson
+import qualified Data.Base64.Types as B64T
+import qualified Data.ByteString.Base64.URL as B64
+import qualified Data.ByteString.Lazy as BSL
+import GameChanger.Encoding (Environment (..), encodeScript)
+import qualified GameChanger.Encoding.LzmaAlone as LzmaAlone
+
+-- Pure; never fails.
+-- encodeScript :: Environment -> Script -> ResolverUrl
+
+-- Under the hood:
+--   JSON bytes = Aeson.encode script
+--   compressed = LzmaAlone.encode jsonBytes
+--   payload    = B64.encodeBase64Unpadded compressed
+--   url        = "https://" <> host env <> "/api/2/run/" <> payload
 ```
 
-(Actual implementation will ship with proper types, testing, and
-round-trip property tests.)
+`LzmaAlone.encode` wraps `liblzma` via a small C shim (`cbits/gc_lzma_alone.c`)
+because the Hackage `lzma` package only exposes the `.xz` format. The
+inverse `decodeResolverUrl` rebuilds the `Script` and is used by both
+the public API and the round-trip property test.
 
 ## Export modes
 
