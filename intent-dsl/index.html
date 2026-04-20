@@ -659,10 +659,17 @@ published JSON schema to build its own typed surface.</p>
    against <code>cardano-api</code> / <code>cardano-node-clients</code>. No WASM target.</li>
 </ol>
 <h2 id="status">Status</h2>
-<p>Design-phase. No code yet. The shape described above is the target
-surface; implementation follows once the
-<a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/.specify/memory/constitution.md">constitution</a>
-and this page stabilize.</p>
+<p>Shipped 2026-04-20 in
+<a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/src/GameChanger/Intent.hs"><code>GameChanger.Intent</code></a>
+and
+<a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/src/GameChanger/Intent/Handles.hs"><code>GameChanger.Intent.Handles</code></a>.
+The surface above — <code>IntentI</code> GADT, <code>type Intent = Program IntentI</code>,
+smart constructors, and <code>declareExport</code> — is the exact public API.
+The type-check harness for the <code>voteOnProposal</code> example lives in
+<a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/test/IntentSpec/VoteOnProposal.hs"><code>test/IntentSpec/VoteOnProposal.hs</code></a>.</p>
+<p>The compiler that folds <code>Intent a</code> into <code>GameChanger.Script.Script</code>
+is tracked by
+<a href="https://github.com/lambdasistemi/haskell-gamechanger/issues/9">#9</a>.</p>
 
 
 
