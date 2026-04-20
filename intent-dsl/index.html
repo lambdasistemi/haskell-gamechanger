@@ -261,6 +261,33 @@
   
   
     <li class="md-nav__item">
+      <a href="../scope/" class="md-nav__link">
+        
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scope
+  
+
+    
+  </span>
+  
+  
+
+      </a>
+    </li>
+  
+
+    
+      
+      
+  
+  
+  
+  
+    <li class="md-nav__item">
       <a href="../protocol/" class="md-nav__link">
         
   
@@ -536,9 +563,13 @@ GameChanger scripts in Haskell. It sits on top of
 <code>GameChanger.Script</code> (the low-level, JSON-faithful layer) and
 compiles down to the same JSON a hand-written script would emit.</p>
 <p>It is a <strong>surface, not a semantics.</strong> It does not evaluate wallet
-actions, does not simulate transactions, and does not add any
-capability the protocol does not already support. It only moves
-errors from wallet-execution time to compile time.</p>
+actions, does not simulate transactions, and adds no capability
+beyond the published DSL. It only moves errors from
+wallet-execution time to compile time.</p>
+<p>It is <strong>backend-only.</strong> This library does not target the browser.
+See <a href="../scope/">scope</a> for why, and
+<a href="../integration/">Integration §6.2 / §6.3</a> for the topologies this
+serves.</p>
 <h2 id="why-an-edsl">Why an eDSL</h2>
 <p>Hand-written GameChanger JSON has two rough edges for anything
 non-trivial:</p>
@@ -551,11 +582,11 @@ non-trivial:</p>
    you copy-paste between scripts. JSON gives no mechanism to
    factor it out.</li>
 </ol>
-<p>An eDSL in Haskell, with the right monadic structure, fixes both:
-typed bindings for wiring, and ordinary Haskell functions for
+<p>An eDSL in Haskell, with a monadic structure, fixes both: typed
+bindings for wiring, and ordinary Haskell functions for
 composition.</p>
 <h2 id="shape">Shape</h2>
-<p>The underlying machinery is
+<p>The encoding is
 <a href="https://hackage.haskell.org/package/operational"><code>Control.Monad.Operational</code></a>.
 Primitives are a GADT; the monad is <code>Program</code>:</p>
 <div class="highlight"><pre><span></span><code><a id="__codelineno-0-1" name="__codelineno-0-1" href="#__codelineno-0-1"></a><span class="kr">data</span><span class="w"> </span><span class="kt">IntentI</span><span class="w"> </span><span class="n">a</span><span class="w"> </span><span class="kr">where</span>
@@ -577,8 +608,13 @@ Primitives are a GADT; the monad is <code>Program</code>:</p>
 </code></pre></div>
 <p>Each <code>&lt;-</code> is a GameChanger action name. Each reference to a bound
 variable (<code>utxos</code>, <code>tx</code>, <code>signed</code>) is, after compilation, a
-<code>{get('cache.&lt;name&gt;')}</code> reference in the emitted JSON. A typo no
-longer compiles.</p>
+<code>{get('cache.&lt;name&gt;')}</code> reference in the emitted JSON. A typo in
+wiring no longer compiles.</p>
+<p>Operational is a deliberate choice over typeclass-indexed encodings
+(final-tagless). The compiler pattern-matches on each <code>IntentI</code>
+constructor to emit the corresponding <code>run</code>-block entry;
+operational's <code>view</code> exposes exactly that structure. No typeclass
+surface is introduced.</p>
 <h2 id="compilation">Compilation</h2>
 <p>A pure interpreter folds an <code>Intent a</code> into a
 <code>GameChanger.Script</code>:</p>
@@ -595,53 +631,38 @@ longer compiles.</p>
 <p>Compilation is <strong>pure and deterministic</strong>: the same <code>Intent</code>
 produces the same JSON, byte-for-byte.</p>
 <h2 id="deployment">Deployment</h2>
-<p>The eDSL + encoder build both natively (for Haskell backends) and
-as WASM (for browser pages). The compiler does not perform IO, does
-not touch keys, and has no platform-specific code — so the two
-builds share 100% of the source.</p>
-<p>This unlocks all three integration topologies from a single
-library:</p>
-<table>
-<thead>
-<tr>
-<th>Topology</th>
-<th>Where the eDSL runs</th>
-<th>What it emits</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Client-only (<a href="../integration/#1-client-only">§6.1</a>)</td>
-<td>In-browser via WASM</td>
-<td>Resolver URL for <code>window.open</code></td>
-</tr>
-<tr>
-<td>Client + backend callback (<a href="../integration/#2-client-backend-callback">§6.2</a>)</td>
-<td>In the Haskell backend</td>
-<td>Resolver URL with a <code>post</code> export</td>
-</tr>
-<tr>
-<td>Backend-only issuer (<a href="../integration/#3-backend-only-issuer">§6.3</a>)</td>
-<td>In the Haskell backend</td>
-<td>Resolver URL, rendered as QR or printed</td>
-</tr>
-</tbody>
-</table>
+<p>Native GHC, linked into whatever backend already talks to
+<code>cardano-node</code>. No WASM, no browser shim.</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>┌─────────────────────────────────────────────┐
+<a id="__codelineno-2-2" name="__codelineno-2-2" href="#__codelineno-2-2"></a>│  Your Haskell service (MPFS, MOOG, your app)│
+<a id="__codelineno-2-3" name="__codelineno-2-3" href="#__codelineno-2-3"></a>├─────────────────────────────────────────────┤
+<a id="__codelineno-2-4" name="__codelineno-2-4" href="#__codelineno-2-4"></a>│  haskell-gamechanger                        │
+<a id="__codelineno-2-5" name="__codelineno-2-5" href="#__codelineno-2-5"></a>├─────────────────────────────────────────────┤
+<a id="__codelineno-2-6" name="__codelineno-2-6" href="#__codelineno-2-6"></a>│  cardano-api / cardano-node-clients         │
+<a id="__codelineno-2-7" name="__codelineno-2-7" href="#__codelineno-2-7"></a>└─────────────────────────────────────────────┘
+</code></pre></div>
+<p>The browser side — the page that opens a resolver URL and receives
+a <code>return</code> or drives a <code>post</code> — is the integrator's responsibility
+and is not part of this library. <code>GameChanger.Script</code>'s JSON
+schema is the published boundary; any language can produce scripts
+that the wallet will accept, and any language can consume the
+published JSON schema to build its own typed surface.</p>
 <h2 id="invariants">Invariants</h2>
-<p>Recorded formally in the <a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/.specify/memory/constitution.md">constitution §11.3</a>:</p>
+<p>Recorded formally in the
+<a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/.specify/memory/constitution.md">constitution §11.3</a>:</p>
 <ol>
 <li><strong>Surface-only.</strong> For every <code>Intent a</code>, there exists a
    handwritten JSON script with identical wallet behavior.</li>
 <li><strong>Deterministic compilation.</strong> Same <code>Intent</code> → same JSON.</li>
 <li><strong>No runtime effects.</strong> Compilation is pure.</li>
-<li><strong>WASM-neutral.</strong> Identical under native GHC and
-   <code>wasm32-wasi-ghc</code>.</li>
+<li><strong>Native-only.</strong> The eDSL and its compiler target native GHC
+   against <code>cardano-api</code> / <code>cardano-node-clients</code>. No WASM target.</li>
 </ol>
 <h2 id="status">Status</h2>
 <p>Design-phase. No code yet. The shape described above is the target
 surface; implementation follows once the
-<a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/.specify/memory/constitution.md">constitution</a> and this page
-stabilize.</p>
+<a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/.specify/memory/constitution.md">constitution</a>
+and this page stabilize.</p>
 
 
 

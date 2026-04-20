@@ -10,13 +10,13 @@
       
       
       
-        <link rel="canonical" href="https://lambdasistemi.github.io/haskell-gamechanger/integration/">
+        <link rel="canonical" href="https://lambdasistemi.github.io/haskell-gamechanger/scope/">
       
       
-        <link rel="prev" href="../protocol/">
+        <link rel="prev" href="..">
       
       
-        <link rel="next" href="../security/">
+        <link rel="next" href="../protocol/">
       
       
         
@@ -27,7 +27,7 @@
     
     
       
-        <title>Integration - haskell-gamechanger</title>
+        <title>Scope - haskell-gamechanger</title>
       
     
     
@@ -76,7 +76,7 @@
     <div data-md-component="skip">
       
         
-        <a href="#integration" class="md-skip">
+        <a href="#scope" class="md-skip">
           Skip to content
         </a>
       
@@ -112,7 +112,7 @@
         <div class="md-header__topic" data-md-component="header-topic">
           <span class="md-ellipsis">
             
-              Integration
+              Scope
             
           </span>
         </div>
@@ -258,10 +258,37 @@
       
   
   
+    
   
   
-    <li class="md-nav__item">
-      <a href="../scope/" class="md-nav__link">
+  
+    <li class="md-nav__item md-nav__item--active">
+      
+      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
+      
+      
+        
+      
+      
+        <label class="md-nav__link md-nav__link--active" for="__toc">
+          
+  
+  
+  <span class="md-ellipsis">
+    
+  
+    Scope
+  
+
+    
+  </span>
+  
+  
+
+          <span class="md-nav__icon md-icon"></span>
+        </label>
+      
+      <a href="./" class="md-nav__link md-nav__link--active">
         
   
   
@@ -277,6 +304,159 @@
   
 
       </a>
+      
+        
+
+<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
+  
+  
+  
+    
+  
+  
+    <label class="md-nav__title" for="__toc">
+      <span class="md-nav__icon md-icon"></span>
+      Table of contents
+    </label>
+    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
+      
+        <li class="md-nav__item">
+  <a href="#what-this-library-serves" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this library serves
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-this-library-does-not-serve" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What this library does not serve
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#why-topology-61-is-out-of-scope" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Why topology 6.1 is out of scope
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Why topology 6.1 is out of scope">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#1-the-ledger-does-not-compile-to-wasm" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        1. The ledger does not compile to WASM
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#2-the-haskell-value-concentrates-on-the-native-side" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        2. The Haskell value concentrates on the native side
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#3-a-schema-beats-a-shim" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        3. A schema beats a shim
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#what-an-integrator-does-for-topology-61" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        What an integrator does for topology 6.1
+      
+    </span>
+  </a>
+  
+</li>
+      
+        <li class="md-nav__item">
+  <a href="#three-alternatives-considered" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        Three alternatives considered
+      
+    </span>
+  </a>
+  
+    <nav class="md-nav" aria-label="Three alternatives considered">
+      <ul class="md-nav__list">
+        
+          <li class="md-nav__item">
+  <a href="#a-backend-only-this-repository" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        A. Backend-only (this repository)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#b-backend-wasm-emit-path-only" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        B. Backend + WASM emit path only
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
+  <a href="#c-two-codebases-sharing-a-json-schema" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        C. Two codebases sharing a JSON schema
+      
+    </span>
+  </a>
+  
+</li>
+        
+      </ul>
+    </nav>
+  
+</li>
+      
+    </ul>
+  
+</nav>
+      
     </li>
   
 
@@ -312,37 +492,10 @@
       
   
   
-    
   
   
-  
-    <li class="md-nav__item md-nav__item--active">
-      
-      <input class="md-nav__toggle md-toggle" type="checkbox" id="__toc">
-      
-      
-        
-      
-      
-        <label class="md-nav__link md-nav__link--active" for="__toc">
-          
-  
-  
-  <span class="md-ellipsis">
-    
-  
-    Integration
-  
-
-    
-  </span>
-  
-  
-
-          <span class="md-nav__icon md-icon"></span>
-        </label>
-      
-      <a href="./" class="md-nav__link md-nav__link--active">
+    <li class="md-nav__item">
+      <a href="../integration/" class="md-nav__link">
         
   
   
@@ -358,81 +511,6 @@
   
 
       </a>
-      
-        
-
-<nav class="md-nav md-nav--secondary" aria-label="Table of contents">
-  
-  
-  
-    
-  
-  
-    <label class="md-nav__title" for="__toc">
-      <span class="md-nav__icon md-icon"></span>
-      Table of contents
-    </label>
-    <ul class="md-nav__list" data-md-component="toc" data-md-scrollfix>
-      
-        <li class="md-nav__item">
-  <a href="#1-client-only" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        1. Client-only
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#2-client-backend-callback" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        2. Client + backend callback
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#3-backend-only-issuer" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        3. Backend-only issuer
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#choosing-between-them" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        Choosing between them
-      
-    </span>
-  </a>
-  
-</li>
-      
-        <li class="md-nav__item">
-  <a href="#what-the-haskell-library-will-expose" class="md-nav__link">
-    <span class="md-ellipsis">
-      
-        What the Haskell library will expose
-      
-    </span>
-  </a>
-  
-</li>
-      
-    </ul>
-  
-</nav>
-      
     </li>
   
 
@@ -546,137 +624,92 @@
   
 
 
-<h1 id="integration">Integration</h1>
-<p>Three canonical topologies for building against GameChanger.</p>
-<h2 id="1-client-only">1. Client-only</h2>
-<p>A single browser page generates the script, opens the resolver URL,
-receives the result via a <code>return</code> export in its own URL, and uses the
-result locally.</p>
-<pre class="mermaid"><code>sequenceDiagram
-    participant Page as Browser page (dapp)
-    participant Wallet as GameChanger wallet
-    participant Chain as Cardano node (via wallet)
-
-    Page-&gt;&gt;Page: build script
-    Page-&gt;&gt;Page: encode to resolver URL
-    Page-&gt;&gt;Wallet: open URL (new tab / redirect)
-    Wallet-&gt;&gt;Wallet: user confirms
-    Wallet-&gt;&gt;Chain: (optional) submit tx
-    Wallet--&gt;&gt;Page: redirect with ?signed=&lt;cbor&gt;
-    Page-&gt;&gt;Page: read signed CBOR from URL</code></pre>
+<h1 id="scope">Scope</h1>
+<p>This page records what <code>haskell-gamechanger</code> is and is not, and why.
+The short form is a sentence:</p>
+<blockquote>
+<p>A backend Haskell library for integrating with the GameChanger
+wallet protocol. Not a browser library, not a WASM artifact, not
+an alternative to CIP-30.</p>
+</blockquote>
+<h2 id="what-this-library-serves">What this library serves</h2>
+<p>Two of the three integration topologies described in
+<a href="../integration/">Integration</a>:</p>
 <ul>
-<li>No backend.</li>
-<li>Haskell is not in the hot path.</li>
-<li>The Haskell library may still be used to <em>author</em> the script and
-  URL, if the front-end is WASM / Haskell-generated.</li>
+<li><strong>§6.2 — Client + backend callback.</strong> A Haskell backend mints a
+  session token, compiles a typed <code>Intent</code> to a GameChanger script,
+  encodes a resolver URL, redirects the user's browser to it, and
+  receives the signed result on its own callback endpoint.</li>
+<li><strong>§6.3 — Backend-only issuer.</strong> The same backend prints resolver
+  URLs (or renders QR codes) for humans, out-of-band. The human
+  signs on whatever device holds their wallet. The result comes
+  back via <code>post</code>.</li>
 </ul>
-<h2 id="2-client-backend-callback">2. Client + backend callback</h2>
-<p>A backend issues the resolver URL (with a <code>post</code> export pointing at a
-backend endpoint), the user's browser opens it, the wallet POSTs the
-signed result to the backend.</p>
-<pre class="mermaid"><code>sequenceDiagram
-    participant Backend as Backend (Haskell)
-    participant User as User's browser
-    participant Wallet as GameChanger wallet
-    participant Chain as Cardano node
-
-    User-&gt;&gt;Backend: request to sign X
-    Backend-&gt;&gt;Backend: mint session token T
-    Backend-&gt;&gt;Backend: build script, bind T into post export
-    Backend--&gt;&gt;User: 302 to resolver URL
-    User-&gt;&gt;Wallet: opens URL
-    Wallet-&gt;&gt;Wallet: user confirms
-    Wallet-&gt;&gt;Backend: POST /callback?session=T { signedCbor }
-    Backend-&gt;&gt;Backend: validate T, parse CBOR, verify intent
-    Backend-&gt;&gt;Chain: submit tx
-    Backend--&gt;&gt;User: render result page</code></pre>
-<p><strong>This is the topology the Haskell library primarily targets.</strong></p>
-<p>Key responsibilities of the backend:</p>
+<p>Both topologies share the same Haskell value proposition: the
+library sits next to the code that already talks to
+<code>cardano-node</code>, and drops in a way to get user signatures without
+the backend ever touching keys.</p>
+<h2 id="what-this-library-does-not-serve">What this library does not serve</h2>
+<p><strong>Topology §6.1 — client-only.</strong> A browser page that builds the
+script, opens the wallet, and consumes the signed result entirely
+in-browser. This is explicitly out of scope.</p>
+<h2 id="why-topology-61-is-out-of-scope">Why topology 6.1 is out of scope</h2>
+<p>Three reasons, in order of weight.</p>
+<h3 id="1-the-ledger-does-not-compile-to-wasm">1. The ledger does not compile to WASM</h3>
+<p>Anything that parses or validates Cardano CBOR (signed
+transactions, redeemers, protocol parameters) transitively depends
+on <code>cardano-ledger</code>, <code>cardano-api</code>, <code>plutus-core</code>, or
+<code>secp256k1</code>. None of these compile to <code>wasm32-wasi</code> today without
+deep vendoring, and even then they carry a multi-megabyte footprint
+that is wrong for a browser library. This is not a solvable
+toolchain problem on a near horizon.</p>
+<h3 id="2-the-haskell-value-concentrates-on-the-native-side">2. The Haskell value concentrates on the native side</h3>
+<p>The things Haskell is genuinely the right tool for in this project
+are submission via <code>cardano-api</code>, integration with existing
+Haskell services (MPFS, MOOG, <code>cardano-node-clients</code>,
+<code>cardano-wallet</code>), and typed transaction handling in the callback
+path. None of those live in the browser.</p>
+<p>The things a browser library actually needs — JSON building,
+gzip + base64url, URL opening, optional QR generation — are
+trivial in any language. A typed Haskell surface for them would be
+nice but is not load-bearing.</p>
+<h3 id="3-a-schema-beats-a-shim">3. A schema beats a shim</h3>
+<p><code>GameChanger.Script</code>'s JSON is a stable, documented format. Any
+language can produce scripts and any language can build its own
+typed surface on top. Publishing a schema is more durable than
+publishing a WASM artifact, and it does not pretend the ledger fits
+in the browser.</p>
+<h2 id="what-an-integrator-does-for-topology-61">What an integrator does for topology 6.1</h2>
+<p>Writes the browser side in whatever tool fits:</p>
 <ul>
-<li>Mint per-request session tokens with short TTLs.</li>
-<li>Bind each session to the resolver URL it issued.</li>
-<li>Validate the session on callback; reject replays.</li>
-<li>Parse the returned CBOR strictly; reject anything that is not the
-  transaction the backend intended to sign.</li>
-<li>Submit the signed transaction through existing node-client paths.</li>
+<li><strong>TypeScript</strong> — straightforward JSON building, tiny footprint.</li>
+<li><strong>PureScript</strong> with <code>purescript-run</code> or similar — equivalent
+  expressivity to the Haskell eDSL via final-tagless or
+  freer-monad encodings. GADTs are not load-bearing for this
+  domain.</li>
+<li><strong>Plain HTML + <code>window.location</code> assignment</strong> — sufficient for
+  many flows where the backend has already produced the URL.</li>
 </ul>
-<h2 id="3-backend-only-issuer">3. Backend-only issuer</h2>
-<p>A backend produces resolver URLs or QR codes for humans. The human
-opens the URL on whatever device holds their wallet. The result comes
-back via <code>post</code> to the same backend (or via the user pasting a
-downloaded/copied result back into a form).</p>
-<pre class="mermaid"><code>sequenceDiagram
-    participant Backend as Backend (Haskell)
-    participant Human as Human operator
-    participant Wallet as GameChanger wallet
-
-    Backend-&gt;&gt;Backend: build script, encode URL
-    Backend-&gt;&gt;Backend: render QR
-    Backend--&gt;&gt;Human: show URL/QR (CLI, email, web page)
-    Human-&gt;&gt;Wallet: scan/open on phone
-    Wallet-&gt;&gt;Wallet: user confirms
-    Wallet-&gt;&gt;Backend: POST /callback?session=T { signedCbor }</code></pre>
-<p>Useful for operational flows — MPFS fee adjustments, MOOG oracle
-whitelisting, one-off admin signatures — where the person signing is
-not the same person running the backend, and where a full web UI is
-overkill.</p>
-<h2 id="choosing-between-them">Choosing between them</h2>
-<table>
-<thead>
-<tr>
-<th>Question</th>
-<th>Client-only</th>
-<th>Client+callback</th>
-<th>Backend-only</th>
-</tr>
-</thead>
-<tbody>
-<tr>
-<td>Is there a Haskell backend involved at all?</td>
-<td>No</td>
-<td>Yes</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>Does the signer use the same device as the issuer?</td>
-<td>Yes</td>
-<td>Yes</td>
-<td>Not required</td>
-</tr>
-<tr>
-<td>Is the signing operator the end-user?</td>
-<td>Yes</td>
-<td>Yes</td>
-<td>Often no</td>
-</tr>
-<tr>
-<td>Needs a backend-tracked session?</td>
-<td>No</td>
-<td>Yes</td>
-<td>Yes</td>
-</tr>
-<tr>
-<td>Gives Haskell full control of script content?</td>
-<td>Only if front-end is WASM</td>
-<td>Yes</td>
-<td>Yes</td>
-</tr>
-</tbody>
-</table>
-<h2 id="what-the-haskell-library-will-expose">What the Haskell library will expose</h2>
-<p>The eventual API layers, each usable in isolation:</p>
-<ul>
-<li><code>GameChanger.Script</code> — typed script records and JSON codecs.</li>
-<li><code>GameChanger.Encoding</code> — <code>Script -&gt; Text</code> (resolver URL) and back.</li>
-<li><code>GameChanger.QR</code> — URL → QR (SVG/PNG).</li>
-<li><code>GameChanger.Callback</code> — typed callback payloads, session
-  validation hooks, servant endpoint combinators.</li>
-<li><code>GameChanger.CLI</code> — an executable that drives the whole pipeline
-  for manual testing on preprod.</li>
-</ul>
-<p>Layered this way, all three topologies compose from the same parts:
-topology 1 uses only <code>Script + Encoding</code>; topology 2 uses
-<code>Script + Encoding + Callback</code>; topology 3 adds <code>QR</code>.</p>
+<h2 id="three-alternatives-considered">Three alternatives considered</h2>
+<p>For posterity, the three scopes weighed before settling on this
+one:</p>
+<h3 id="a-backend-only-this-repository">A. Backend-only (this repository)</h3>
+<p>Ship only what runs natively. Publish the JSON schema. Don't
+pretend to be in the browser. Smallest scope, cleanest story,
+biggest overlap with the project's actual Haskell workloads.</p>
+<h3 id="b-backend-wasm-emit-path-only">B. Backend + WASM emit path only</h3>
+<p>Ship a WASM build of <code>Script + Intent + Encoding + QR</code> — no
+cardano-api, no CBOR parsing in the browser. Possible, but the
+toolchain cost and multi-megabyte artifact buy only a small
+convenience over a JS/TS client reading the same JSON schema.</p>
+<h3 id="c-two-codebases-sharing-a-json-schema">C. Two codebases sharing a JSON schema</h3>
+<p>Haskell for 6.2 / 6.3. A separate PureScript or TypeScript library
+for 6.1. Two implementations, one schema. Right answer if the
+browser use case grows its own weight independently; unneeded
+overhead today.</p>
+<p><strong>Chosen: A.</strong> Documented here so a future reader understands why
+B and C were not picked, and can re-open the decision if the
+browser case grows enough to justify (C).</p>
 
 
 
