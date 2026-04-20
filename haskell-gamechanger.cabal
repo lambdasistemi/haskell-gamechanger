@@ -1,0 +1,65 @@
+cabal-version: 3.0
+name:          haskell-gamechanger
+version:       0.1.0.0
+synopsis:      Haskell client for the GameChanger Cardano wallet
+description:
+  Backend-only Haskell library for driving the GameChanger browser
+  wallet via its JSON script protocol. See the
+  <https://lambdasistemi.github.io/haskell-gamechanger/ documentation>
+  for scope, protocol notes, and integration topologies.
+
+license:       Apache-2.0
+license-file:  LICENSE
+author:        Paolo Veronelli
+maintainer:    paolo.veronelli@gmail.com
+copyright:     2026 Paolo Veronelli
+category:      Cardano
+build-type:    Simple
+homepage:      https://lambdasistemi.github.io/haskell-gamechanger/
+bug-reports:
+  https://github.com/lambdasistemi/haskell-gamechanger/issues
+
+source-repository head
+  type:     git
+  location: https://github.com/lambdasistemi/haskell-gamechanger
+
+common warnings
+  ghc-options:
+    -Wall -Wcompat -Widentities -Wincomplete-record-updates
+    -Wincomplete-uni-patterns -Wmissing-export-lists
+    -Wmissing-home-modules -Wpartial-fields -Wredundant-constraints
+
+library
+  import:           warnings
+  hs-source-dirs:   src
+  exposed-modules:  GameChanger
+  build-depends:
+    , base  >=4.19 && <5
+    , text  >=2.0  && <2.2
+
+  default-language: Haskell2010
+
+executable hgc
+  import:           warnings
+  main-is:          Main.hs
+  hs-source-dirs:   app
+  build-depends:
+    , base                 >=4.19 && <5
+    , haskell-gamechanger
+    , text                 >=2.0  && <2.2
+
+  default-language: Haskell2010
+
+test-suite test
+  import:           warnings
+  type:             exitcode-stdio-1.0
+  main-is:          Spec.hs
+  hs-source-dirs:   test
+  build-depends:
+    , base                 >=4.19 && <5
+    , haskell-gamechanger
+    , tasty                >=1.5  && <1.6
+    , tasty-hunit          >=0.10 && <0.11
+    , text                 >=2.0  && <2.2
+
+  default-language: Haskell2010
