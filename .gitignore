@@ -7,3 +7,5 @@ result-*
 dist-newstyle/
 cabal.project.local
 .ghc.environment.*
+# Stray `output` file pkg-config leaves behind during cabal configure.
+/output

@@ -1,4 +1,5 @@
 {-# LANGUAGE DerivingStrategies #-}
+{-# LANGUAGE OverloadedStrings #-}
 {-# OPTIONS_GHC -Wno-partial-fields #-}
 
 {- | Encode / decode @Script@ values as resolver URLs.
@@ -10,10 +11,6 @@ pipeline to recover a 'Script' from an incoming URL.
 The wire format is LZMA-alone compression + base64url (unpadded) at
 @\/api\/2\/run\/@. See [data-model.md](../../specs/003-gamechanger-encoding-lzma1/data-model.md)
 for byte-level details.
-
-Bodies are stubbed with 'undefined' in the initial commit and filled
-in by phases 2–5 of the task list. The module compiles so that the
-rest of the tree stays bisect-safe while the encoder lands.
 -}
 module GameChanger.Encoding (
     -- * Environments
@@ -33,7 +30,15 @@ module GameChanger.Encoding (
     DecodeError (..),
 ) where
 
+import qualified Data.Aeson as Aeson
+import qualified Data.Base64.Types as B64T
+import qualified Data.ByteString.Base64.URL as B64
+import qualified Data.ByteString.Lazy as BSL
+import Data.List (find)
 import Data.Text (Text)
+import qualified Data.Text as T
+import qualified Data.Text.Encoding as TE
+import GameChanger.Encoding.LzmaAlone (decode, encode)
 import GameChanger.Script (Script)
 
 {- | Which GameChanger wallet deployment a URL targets.
@@ -51,7 +56,17 @@ data Environment
 
 -- | Host portion of the resolver URL for a given environment.
 environmentHost :: Environment -> Text
-environmentHost = undefined -- NOTE: stub, filled in by T010
+environmentHost Mainnet = "wallet.gamechanger.finance"
+environmentHost BetaMainnet = "beta-wallet.gamechanger.finance"
+environmentHost BetaPreprod = "beta-preprod-wallet.gamechanger.finance"
+
+-- | Fixed path segment shared by every wallet environment.
+resolverPath :: Text
+resolverPath = "/api/2/run/"
+
+-- | Full scheme + host + path prefix for an environment's resolver URLs.
+environmentPrefix :: Environment -> Text
+environmentPrefix env = "https://" <> environmentHost env <> resolverPath
 
 {- | An opaque wallet resolver URL.
 
@@ -65,19 +80,43 @@ newtype ResolverUrl = ResolverUrl {unResolverUrl :: Text}
 start with a known environment's host followed by @\/api\/2\/run\/@.
 -}
 mkResolverUrl :: Text -> Either DecodeError ResolverUrl
-mkResolverUrl = undefined -- NOTE: stub, filled in by T011
+mkResolverUrl t =
+    case find (`T.isPrefixOf` t) (map environmentPrefix [minBound .. maxBound]) of
+        Just _ -> Right (ResolverUrl t)
+        Nothing -> Left (BadResolverPrefix (T.take 64 t))
 
 {- | Encode a 'Script' into a 'ResolverUrl' targeted at the given
 environment. Pure; never fails.
 -}
 encodeScript :: Environment -> Script -> ResolverUrl
-encodeScript = undefined -- NOTE: stub, filled in by T012
+encodeScript env s =
+    ResolverUrl (environmentPrefix env <> payload)
+  where
+    jsonBytes = BSL.toStrict (Aeson.encode s)
+    compressed = encode jsonBytes
+    payload = B64T.extractBase64 (B64.encodeBase64Unpadded compressed)
 
 {- | Decode a 'ResolverUrl' back into a 'Script'. Fails with a
 stage-named 'DecodeError' if any pipeline stage rejects the input.
 -}
 decodeResolverUrl :: ResolverUrl -> Either DecodeError Script
-decodeResolverUrl = undefined -- NOTE: stub, filled in by T013
+decodeResolverUrl (ResolverUrl url) = do
+    payload <- stripPrefix
+    raw <- case B64.decodeBase64Untyped (TE.encodeUtf8 payload) of
+        Left e -> Left (BadBase64 e)
+        Right bs -> Right bs
+    json <- case decode raw of
+        Left e -> Left (BadCompression e)
+        Right bs -> Right bs
+    case Aeson.eitherDecodeStrict json of
+        Left e -> Left (BadJson (T.pack e))
+        Right s -> Right s
+  where
+    prefixes = map environmentPrefix [minBound .. maxBound]
+    stripPrefix =
+        case find (`T.isPrefixOf` url) prefixes of
+            Just p -> Right (T.drop (T.length p) url)
+            Nothing -> Left (BadResolverPrefix (T.take 64 url))
 
 -- | Where in the decoding pipeline a failure occurred.
 data DecodeError
