@@ -24,6 +24,7 @@ import Test.Tasty.HUnit (assertBool, assertFailure, testCase, (@?=))
 main :: IO ()
 main = do
     goldens <- Golden.goldenTests
+    encoding <- EncodingSpec.tests
     defaultMain $
         testGroup
             "haskell-gamechanger"
@@ -35,7 +36,7 @@ main = do
                 , smartConstructorTags
                 , goldens
                 ]
-            , EncodingSpec.tests
+            , encoding
             ]
 
 roundTripHandBuilt :: TestTree

@@ -63,6 +63,26 @@ executable hgc
 
   default-language: Haskell2010
 
+-- Regenerates the resolver-URL fixtures in test/fixtures/resolver-urls/
+-- from the #6 goldens in test/golden/. Run by hand (inside `nix develop`)
+-- when a #6 golden changes or a new fixture is added:
+--
+-- @cabal run gen-fixtures@
+--
+-- The fixtures are committed, so this exe does not run in CI.
+executable gen-fixtures
+  import:           warnings
+  main-is:          GenFixtures.hs
+  hs-source-dirs:   test
+  build-depends:
+    , aeson                ^>=2.2
+    , base                 >=4.19 && <5
+    , bytestring           >=0.11 && <0.13
+    , haskell-gamechanger
+    , text                 >=2.0  && <2.2
+
+  default-language: Haskell2010
+
 test-suite test
   import:           warnings
   type:             exitcode-stdio-1.0
