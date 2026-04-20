@@ -14,6 +14,7 @@ import qualified Data.Aeson as Aeson
 import qualified Data.Aeson.KeyMap as KeyMap
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
+import qualified EncodingSpec
 import GameChanger (version)
 import GameChanger.Script
 import qualified Golden
@@ -34,6 +35,9 @@ main = do
                 , smartConstructorTags
                 , goldens
                 ]
+            , testGroup
+                "Encoding"
+                [EncodingSpec.tests]
             ]
 
 roundTripHandBuilt :: TestTree
