@@ -35,6 +35,8 @@ library
     GameChanger
     GameChanger.Encoding
     GameChanger.Encoding.LzmaAlone
+    GameChanger.Intent
+    GameChanger.Intent.Handles
     GameChanger.Script
     GameChanger.Script.Smart
     GameChanger.Script.Types
@@ -42,13 +44,14 @@ library
   c-sources:         cbits/gc_lzma_alone.c
   pkgconfig-depends: liblzma
   build-depends:
-    , aeson       ^>=2.2
-    , base        >=4.19  && <5
-    , base64      ^>=1.0
-    , bytestring  >=0.11  && <0.13
-    , containers  >=0.6   && <0.8
-    , lzma        >=0.0.1 && <0.1
-    , text        >=2.0   && <2.2
+    , aeson        ^>=2.2
+    , base         >=4.19   && <5
+    , base64       ^>=1.0
+    , bytestring   >=0.11   && <0.13
+    , containers   >=0.6    && <0.8
+    , lzma         >=0.0.1  && <0.1
+    , operational  ^>=0.2.4
+    , text         >=2.0    && <2.2
 
   default-language:  Haskell2010
 
@@ -92,20 +95,23 @@ test-suite test
     Arbitrary
     EncodingSpec
     Golden
+    IntentSpec
+    IntentSpec.VoteOnProposal
 
   build-depends:
     , aeson                ^>=2.2
-    , base                 >=4.19  && <5
-    , bytestring           >=0.11  && <0.13
-    , containers           >=0.6   && <0.8
-    , filepath             >=1.4   && <1.6
+    , base                 >=4.19   && <5
+    , bytestring           >=0.11   && <0.13
+    , containers           >=0.6    && <0.8
+    , filepath             >=1.4    && <1.6
     , haskell-gamechanger
+    , operational          ^>=0.2.4
     , QuickCheck           ^>=2.14
-    , tasty                >=1.5   && <1.6
-    , tasty-golden         >=2.3   && <2.4
-    , tasty-hunit          >=0.10  && <0.11
+    , tasty                >=1.5    && <1.6
+    , tasty-golden         >=2.3    && <2.4
+    , tasty-hunit          >=0.10   && <0.11
     , tasty-quickcheck     ^>=0.10
-    , text                 >=2.0   && <2.2
-    , vector               >=0.13  && <0.14
+    , text                 >=2.0    && <2.2
+    , vector               >=0.13   && <0.14
 
   default-language: Haskell2010

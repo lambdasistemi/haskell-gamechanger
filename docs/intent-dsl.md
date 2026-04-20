@@ -124,7 +124,15 @@ Recorded formally in the
 
 ## Status
 
-Design-phase. No code yet. The shape described above is the target
-surface; implementation follows once the
-[constitution](https://github.com/lambdasistemi/haskell-gamechanger/blob/main/.specify/memory/constitution.md)
-and this page stabilize.
+Shipped 2026-04-20 in
+[`GameChanger.Intent`](https://github.com/lambdasistemi/haskell-gamechanger/blob/main/src/GameChanger/Intent.hs)
+and
+[`GameChanger.Intent.Handles`](https://github.com/lambdasistemi/haskell-gamechanger/blob/main/src/GameChanger/Intent/Handles.hs).
+The surface above — `IntentI` GADT, `type Intent = Program IntentI`,
+smart constructors, and `declareExport` — is the exact public API.
+The type-check harness for the `voteOnProposal` example lives in
+[`test/IntentSpec/VoteOnProposal.hs`](https://github.com/lambdasistemi/haskell-gamechanger/blob/main/test/IntentSpec/VoteOnProposal.hs).
+
+The compiler that folds `Intent a` into `GameChanger.Script.Script`
+is tracked by
+[#9](https://github.com/lambdasistemi/haskell-gamechanger/issues/9).
