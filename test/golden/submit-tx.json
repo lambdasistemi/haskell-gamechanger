@@ -1,0 +1,20 @@
+{
+  "type": "script",
+  "title": "Submit a signed transaction",
+  "run": {
+    "submitted": {
+      "type": "submitTx",
+      "namespace": "cache",
+      "detail": {
+        "tx": "{get('inputs.signed')}"
+      }
+    }
+  },
+  "exports": {
+    "hash": {
+      "source": "{get('cache.submitted')}",
+      "mode": "post",
+      "postUrl": "https://example.invalid/hash"
+    }
+  }
+}

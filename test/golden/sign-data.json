@@ -1,0 +1,21 @@
+{
+  "type": "script",
+  "title": "Sign a message",
+  "description": "Sign the literal text \"hello\" with the connected wallet.",
+  "run": {
+    "signResult": {
+      "type": "signData",
+      "namespace": "cache",
+      "detail": {
+        "address": "addr_test1qpk...placeholder",
+        "message": "hello"
+      }
+    }
+  },
+  "exports": {
+    "signature": {
+      "source": "{get('cache.signResult')}",
+      "mode": "copy"
+    }
+  }
+}

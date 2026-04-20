@@ -1,0 +1,20 @@
+{
+  "type": "script",
+  "title": "Sign a pre-built transaction",
+  "run": {
+    "signed": {
+      "type": "signTx",
+      "namespace": "cache",
+      "detail": {
+        "tx": "{get('inputs.unsigned')}"
+      }
+    }
+  },
+  "exports": {
+    "witness": {
+      "source": "{get('cache.signed')}",
+      "mode": "return",
+      "returnUrl": "https://example.invalid/redirect"
+    }
+  }
+}

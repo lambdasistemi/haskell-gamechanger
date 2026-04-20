@@ -1,0 +1,21 @@
+{
+  "type": "script",
+  "title": "Export via download",
+  "run": {
+    "result": {
+      "type": "signData",
+      "namespace": "cache",
+      "detail": {
+        "address": "addr_test1qpk...placeholder",
+        "message": "download-mode"
+      }
+    }
+  },
+  "exports": {
+    "out": {
+      "source": "{get('cache.result')}",
+      "mode": "download",
+      "downloadName": "signature.bin"
+    }
+  }
+}
