@@ -410,6 +410,17 @@
       <ul class="md-nav__list">
         
           <li class="md-nav__item">
+  <a href="#the-lzma-alone-container-13-byte-header" class="md-nav__link">
+    <span class="md-ellipsis">
+      
+        The .lzma alone container (13-byte header)
+      
+    </span>
+  </a>
+  
+</li>
+        
+          <li class="md-nav__item">
   <a href="#properties" class="md-nav__link">
     <span class="md-ellipsis">
       
@@ -698,41 +709,90 @@ maps a display name to a descriptor that specifies:</p>
 <p>Scripts may declare multiple exports; they are all performed.</p>
 <h2 id="encoding-pipeline">Encoding pipeline</h2>
 <p>The script never travels as plain JSON. Clients encode it like this:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>JSON  ──gzip──►  bytes  ──base64url──►  ascii  ──prepend──►  resolver URL
+<div class="highlight"><pre><span></span><code><a id="__codelineno-1-1" name="__codelineno-1-1" href="#__codelineno-1-1"></a>JSON  ──lzma-alone──►  bytes  ──base64url──►  ascii  ──prepend──►  resolver URL
 </code></pre></div>
 <p>The final URL looks like:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>https://beta-wallet.gamechanger.finance/api/2/tx/&lt;base64url-of-gzipped-json&gt;
+<div class="highlight"><pre><span></span><code><a id="__codelineno-2-1" name="__codelineno-2-1" href="#__codelineno-2-1"></a>https://beta-preprod-wallet.gamechanger.finance/api/2/run/&lt;base64url-of-lzma-alone-encoded-json&gt;
 </code></pre></div>
-<p>or the mainnet resolver path:</p>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a>https://gamechanger.finance/resolver/&lt;base64url-of-gzipped-json&gt;
-</code></pre></div>
+<p>The base64 payload always starts with <code>XQ</code> — the base64 encoding of
+the LZMA-alone properties byte (<code>0x5D</code>) followed by the top of the
+little-endian dictionary-size field (<code>0x00</code>).</p>
+<h3 id="the-lzma-alone-container-13-byte-header">The <code>.lzma</code> alone container (13-byte header)</h3>
+<p>The compressed body is not raw LZMA1 and not <code>.xz</code>. It is the legacy
+<code>.lzma</code> "alone" container: a 13-byte header followed by an LZMA1
+stream, with no end-of-stream marker beyond the uncompressed-size
+field in the header.</p>
+<table>
+<thead>
+<tr>
+<th>Offset</th>
+<th>Size</th>
+<th>Field</th>
+<th>Value</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>0</td>
+<td>1</td>
+<td>properties</td>
+<td><code>0x5D</code> (lc=3, lp=0, pb=2 — defaults)</td>
+</tr>
+<tr>
+<td>1</td>
+<td>4</td>
+<td>dictionary size</td>
+<td><code>0x02000000</code> LE = 32 MiB</td>
+</tr>
+<tr>
+<td>5</td>
+<td>8</td>
+<td>uncompressed size</td>
+<td>byte length of the JSON payload, LE</td>
+</tr>
+</tbody>
+</table>
+<p><code>liblzma</code>'s <code>lzma_alone_encoder</code> emits exactly this layout, with one
+caveat: for streaming input it writes <code>0xFF…FF</code> in the
+uncompressed-size field ("unknown"). The wallet's decoder rejects
+that marker, so the encoder patches bytes 5–12 with the actual length
+before handing the buffer off.</p>
 <h3 id="properties">Properties</h3>
 <ul>
-<li><strong>gzip</strong> — standard gzip format, not raw deflate. Any language with
-  a gzip library round-trips. Add/remove standard headers; no custom
-  magic.</li>
+<li><strong>lzma-alone</strong> — legacy <code>.lzma</code> format, not <code>.xz</code>. Any <code>liblzma</code>
+  build exposes it via <code>lzma_alone_encoder</code>; no custom magic. The
+  GameChanger wallet detects this variant from its <code>XQ</code> header.</li>
 <li><strong>base64url</strong> — URL-safe alphabet (<code>-</code>, <code>_</code> substitutions), padding
-  (<code>=</code>) typically stripped.</li>
+  (<code>=</code>) stripped.</li>
 <li><strong>Size threshold</strong> — beyond a certain size the script does not fit
   in a URL and has to be hosted (the URL then references the hosted
   blob). This project targets the inline form; hosted scripts are a
   future concern.</li>
 </ul>
 <h3 id="haskell-sketch">Haskell sketch</h3>
-<div class="highlight"><pre><span></span><code><a id="__codelineno-4-1" name="__codelineno-4-1" href="#__codelineno-4-1"></a><span class="kr">import</span><span class="w"> </span><span class="nn">Codec.Compression.GZip</span><span class="w"> </span><span class="p">(</span><span class="nf">compress</span><span class="p">)</span>
-<a id="__codelineno-4-2" name="__codelineno-4-2" href="#__codelineno-4-2"></a><span class="kr">import</span><span class="w"> </span><span class="nn">Data.ByteString.Base64.URL</span><span class="w"> </span><span class="p">(</span><span class="nf">encodeBase64Unpadded</span><span class="p">)</span>
-<a id="__codelineno-4-3" name="__codelineno-4-3" href="#__codelineno-4-3"></a><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Aeson</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Aeson</span>
-<a id="__codelineno-4-4" name="__codelineno-4-4" href="#__codelineno-4-4"></a>
-<a id="__codelineno-4-5" name="__codelineno-4-5" href="#__codelineno-4-5"></a><span class="nf">encodeScript</span><span class="w"> </span><span class="ow">::</span><span class="w"> </span><span class="kt">Script</span><span class="w"> </span><span class="ow">-&gt;</span><span class="w"> </span><span class="kt">Text</span>
-<a id="__codelineno-4-6" name="__codelineno-4-6" href="#__codelineno-4-6"></a><span class="nf">encodeScript</span><span class="w"> </span><span class="ow">=</span>
-<a id="__codelineno-4-7" name="__codelineno-4-7" href="#__codelineno-4-7"></a><span class="w">      </span><span class="p">(</span><span class="s">&quot;https://beta-wallet.gamechanger.finance/api/2/tx/&quot;</span><span class="w"> </span><span class="o">&lt;&gt;</span><span class="p">)</span>
-<a id="__codelineno-4-8" name="__codelineno-4-8" href="#__codelineno-4-8"></a><span class="w">    </span><span class="o">.</span><span class="w"> </span><span class="n">encodeBase64Unpadded</span>
-<a id="__codelineno-4-9" name="__codelineno-4-9" href="#__codelineno-4-9"></a><span class="w">    </span><span class="o">.</span><span class="w"> </span><span class="kt">Lazy</span><span class="o">.</span><span class="n">toStrict</span>
-<a id="__codelineno-4-10" name="__codelineno-4-10" href="#__codelineno-4-10"></a><span class="w">    </span><span class="o">.</span><span class="w"> </span><span class="n">compress</span>
-<a id="__codelineno-4-11" name="__codelineno-4-11" href="#__codelineno-4-11"></a><span class="w">    </span><span class="o">.</span><span class="w"> </span><span class="kt">Aeson</span><span class="o">.</span><span class="n">encode</span>
+<p>The implementation lives in
+<a href="https://github.com/lambdasistemi/haskell-gamechanger/blob/main/src/GameChanger/Encoding.hs"><code>GameChanger.Encoding</code></a>.
+The pipeline is:</p>
+<div class="highlight"><pre><span></span><code><a id="__codelineno-3-1" name="__codelineno-3-1" href="#__codelineno-3-1"></a><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Aeson</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">Aeson</span>
+<a id="__codelineno-3-2" name="__codelineno-3-2" href="#__codelineno-3-2"></a><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.Base64.Types</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">B64T</span>
+<a id="__codelineno-3-3" name="__codelineno-3-3" href="#__codelineno-3-3"></a><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.ByteString.Base64.URL</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">B64</span>
+<a id="__codelineno-3-4" name="__codelineno-3-4" href="#__codelineno-3-4"></a><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">Data.ByteString.Lazy</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">BSL</span>
+<a id="__codelineno-3-5" name="__codelineno-3-5" href="#__codelineno-3-5"></a><span class="kr">import</span><span class="w"> </span><span class="nn">GameChanger.Encoding</span><span class="w"> </span><span class="p">(</span><span class="kt">Environment</span><span class="w"> </span><span class="p">(</span><span class="o">..</span><span class="p">),</span><span class="w"> </span><span class="nf">encodeScript</span><span class="p">)</span>
+<a id="__codelineno-3-6" name="__codelineno-3-6" href="#__codelineno-3-6"></a><span class="kr">import</span><span class="w"> </span><span class="k">qualified</span><span class="w"> </span><span class="nn">GameChanger.Encoding.LzmaAlone</span><span class="w"> </span><span class="k">as</span><span class="w"> </span><span class="n">LzmaAlone</span>
+<a id="__codelineno-3-7" name="__codelineno-3-7" href="#__codelineno-3-7"></a>
+<a id="__codelineno-3-8" name="__codelineno-3-8" href="#__codelineno-3-8"></a><span class="c1">-- Pure; never fails.</span>
+<a id="__codelineno-3-9" name="__codelineno-3-9" href="#__codelineno-3-9"></a><span class="c1">-- encodeScript :: Environment -&gt; Script -&gt; ResolverUrl</span>
+<a id="__codelineno-3-10" name="__codelineno-3-10" href="#__codelineno-3-10"></a>
+<a id="__codelineno-3-11" name="__codelineno-3-11" href="#__codelineno-3-11"></a><span class="c1">-- Under the hood:</span>
+<a id="__codelineno-3-12" name="__codelineno-3-12" href="#__codelineno-3-12"></a><span class="c1">--   JSON bytes = Aeson.encode script</span>
+<a id="__codelineno-3-13" name="__codelineno-3-13" href="#__codelineno-3-13"></a><span class="c1">--   compressed = LzmaAlone.encode jsonBytes</span>
+<a id="__codelineno-3-14" name="__codelineno-3-14" href="#__codelineno-3-14"></a><span class="c1">--   payload    = B64.encodeBase64Unpadded compressed</span>
+<a id="__codelineno-3-15" name="__codelineno-3-15" href="#__codelineno-3-15"></a><span class="c1">--   url        = &quot;https://&quot; &lt;&gt; host env &lt;&gt; &quot;/api/2/run/&quot; &lt;&gt; payload</span>
 </code></pre></div>
-<p>(Actual implementation will ship with proper types, testing, and
-round-trip property tests.)</p>
+<p><code>LzmaAlone.encode</code> wraps <code>liblzma</code> via a small C shim (<code>cbits/gc_lzma_alone.c</code>)
+because the Hackage <code>lzma</code> package only exposes the <code>.xz</code> format. The
+inverse <code>decodeResolverUrl</code> rebuilds the <code>Script</code> and is used by both
+the public API and the round-trip property test.</p>
 <h2 id="export-modes">Export modes</h2>
 <table>
 <thead>
