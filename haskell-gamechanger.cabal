@@ -69,6 +69,7 @@ test-suite test
   main-is:          Spec.hs
   hs-source-dirs:   test
   other-modules:
+    Arbitrary
     EncodingSpec
     Golden
 
@@ -85,5 +86,6 @@ test-suite test
     , tasty-hunit          >=0.10  && <0.11
     , tasty-quickcheck     ^>=0.10
     , text                 >=2.0   && <2.2
+    , vector               >=0.13  && <0.14
 
   default-language: Haskell2010

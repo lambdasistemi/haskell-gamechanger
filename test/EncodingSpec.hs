@@ -11,18 +11,53 @@ module EncodingSpec (
     tests,
 ) where
 
+import Arbitrary ()
 import qualified Data.ByteString as BS
+import GameChanger.Encoding (
+    decodeResolverUrl,
+    encodeScript,
+ )
 import qualified GameChanger.Encoding.LzmaAlone as LzmaAlone
+import GameChanger.Script (Script)
 import Test.Tasty (TestTree, testGroup)
 import Test.Tasty.HUnit (assertEqual, testCase, (@?=))
+import Test.Tasty.QuickCheck (
+    forAll,
+    testProperty,
+    withMaxSuccess,
+    (===),
+ )
+import qualified Test.Tasty.QuickCheck as QC
 
 tests :: TestTree
 tests =
     testGroup
-        "LzmaAlone"
-        [ roundTripSynthetic
-        , headerLayoutRegression
+        "Encoding"
+        [ testGroup
+            "LzmaAlone"
+            [ roundTripSynthetic
+            , headerLayoutRegression
+            ]
+        , testGroup
+            "ResolverUrl"
+            [ roundTripProperty
+            ]
         ]
+
+{- | For every 'Environment', `decodeResolverUrl . encodeScript env ≡
+Right`. 1000 cases per environment. 'Arbitrary' instances live in
+"Arbitrary".
+-}
+roundTripProperty :: TestTree
+roundTripProperty =
+    testGroup "encodeScript / decodeResolverUrl round-trip" $
+        map perEnv [minBound .. maxBound]
+  where
+    perEnv env =
+        testProperty (show env) $
+            withMaxSuccess 1000 $
+                forAll (QC.arbitrary :: QC.Gen Script) $ \s ->
+                    decodeResolverUrl (encodeScript env s) === Right s
 
 {- | Encoding then decoding a synthetic payload yields the original
 bytes. The input mixes ASCII and non-ASCII UTF-8 bytes to exercise

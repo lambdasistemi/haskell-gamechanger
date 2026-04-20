@@ -35,9 +35,7 @@ main = do
                 , smartConstructorTags
                 , goldens
                 ]
-            , testGroup
-                "Encoding"
-                [EncodingSpec.tests]
+            , EncodingSpec.tests
             ]
 
 roundTripHandBuilt :: TestTree
