@@ -18,6 +18,7 @@ import qualified EncodingSpec
 import GameChanger (version)
 import GameChanger.Script
 import qualified Golden
+import qualified IntentSpec
 import Test.Tasty (TestTree, defaultMain, testGroup)
 import Test.Tasty.HUnit (assertBool, assertFailure, testCase, (@?=))
 
@@ -37,6 +38,7 @@ main = do
                 , goldens
                 ]
             , encoding
+            , IntentSpec.tests
             ]
 
 roundTripHandBuilt :: TestTree
