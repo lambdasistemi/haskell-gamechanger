@@ -148,7 +148,7 @@ gc:SignedResult a owl:Class ;
 
 gc:IntentProgram a owl:Class ;
   rdfs:label "Intent program" ;
-  dcterms:description "A Haskell operational-monad expression in GameChanger.Intent that compiles deterministically to a gc:Script. A surface layer with typed bindings for {get(...)} references and ordinary Haskell combinators for composition; adds no wallet semantics beyond the published DSL." ;
+  dcterms:description "A Haskell expression in GameChanger.Intent, built on Control.Monad.Operational, that compiles deterministically to a gc:Script. A surface layer with typed bindings for {get(...)} references and ordinary Haskell combinators for composition; adds no wallet semantics beyond the published DSL. Native backend only." ;
   rdfs:subClassOf gckind:concept .
 
 gc:compilesTo a owl:ObjectProperty ;

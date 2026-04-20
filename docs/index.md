@@ -51,6 +51,9 @@ What Haskell cannot do:
 
 ## Where to start
 
+- **Wondering what this library is?** Read [Scope](./scope.md) — a
+  short page on what this library does, what it does not, and why
+  topology 6.1 (client-only) is out of scope.
 - **New to GameChanger?** Read [Protocol](./protocol.md) — it covers
   the script DSL, the encoding pipeline, and export modes.
 - **Planning to integrate?** Read [Integration](./integration.md) —
@@ -60,7 +63,7 @@ What Haskell cannot do:
   published audits.
 - **Designing the Haskell API?** Read
   [Intent eDSL](./intent-dsl.md) — the monadic surface that compiles
-  to GameChanger scripts, deployable natively and as WASM.
+  to GameChanger scripts, native backend only.
 - **Browsing visually?** Open the
   [graph view](https://lambdasistemi.github.io/graph-browser/?repo=lambdasistemi/haskell-gamechanger)
   — the same concepts as a node-link diagram, backed by a

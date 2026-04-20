@@ -1,6 +1,6 @@
 # haskell-gamechanger Constitution
 
-**Version:** 0.2.0 · **Ratified:** 2026-04-18 · **Status:** Understanding phase
+**Version:** 0.3.0 · **Ratified:** 2026-04-18 · **Status:** Understanding phase
 
 This project's current purpose is **to understand the GameChanger
 wallet protocol thoroughly before writing any Haskell code against it**.
@@ -200,30 +200,36 @@ results — "no public audit found as of 2026-04-18" is valid content).
 
 ## 8. What This Repository Will Ship (Eventually)
 
-The eventual scope of a Haskell implementation rests on this
-constitution:
+This library is a **backend library for GameChanger integrations**.
+It targets topologies [6.2](#62-client--backend-callback) and
+[6.3](#63-backend-only-issuer) — the ones where a Haskell service
+authors scripts, dispatches them to a user's browser via URL or QR,
+and receives signed results via a callback. Topology
+[6.1](#61-client-only) (fully in-browser) is **out of scope**; an
+integrator who wants client-only behavior implements the browser
+side in whatever language suits them, against the published
+`GameChanger.Script` JSON schema.
+
+The eventual scope:
 
 - A **pure Haskell model** of the script DSL
   (`GameChanger.Script`, Aeson records), the encoding pipeline, the
-  export descriptors, and the callback payload shape. This is the
-  low-level, JSON-faithful layer.
+  export descriptors, and the callback payload shape. The JSON
+  schema emitted here is the **published boundary** for non-Haskell
+  clients.
 - A **monadic intent eDSL** (`GameChanger.Intent`) built on
-  `Control.Monad.Operational`. Users compose scripts in `do`-notation
-  with typed bindings and action combinators; a pure compiler emits
-  the corresponding `GameChanger.Script` JSON with properly-wired
-  `{get(...)}` references. See §11.
+  `Control.Monad.Operational` — see §11 — with a pure,
+  deterministic compiler to `GameChanger.Script`.
 - A **URL builder** that takes a typed script (or a compiled
   `Intent`) and returns a resolver URL, plus a **QR renderer** for
   out-of-band delivery.
 - A **callback receiver** (servant or warp) for the `post` export
-  that validates sessions, parses CBOR, and hands signed transactions
-  to an existing cardano-api / node-clients submission path.
-- A **WASM build** of the eDSL + encoder. Same library, two
-  deployment targets: native in a Haskell backend (topologies 6.2
-  and 6.3) and in-browser (topology 6.1, driving a page that opens
-  the wallet). First-class target once the eDSL surface stabilizes.
-- A **small CLI** that wraps the native layers — useful for manual
-  preprod testing and as an integration smoke-test.
+  that validates sessions, parses CBOR strictly, and hands signed
+  transactions to an existing cardano-api / node-clients
+  submission path.
+- A **small CLI** (`hgc`) that wraps the above — manual preprod
+  testing and integration smoke-tests, including an end-to-end
+  driver that runs against the real beta wallet.
 
 Explicitly out of scope:
 
@@ -233,14 +239,26 @@ Explicitly out of scope:
   Haskell-side interpreter for `buildTx`, `signTx`, or any other
   action.
 - Reimplementing any part of the wallet.
+- **Topology 6.1 (client-only) and any in-browser Haskell
+  deployment.** The `cardano-api` / `cardano-ledger` dependency
+  chain needed for CBOR-level transaction handling does not
+  WASM-compile today, and this library's value concentrates on the
+  native side that already talks to `cardano-node`. Projects that
+  need typed script construction in the browser consume the
+  published JSON schema from TypeScript, PureScript, or similar.
+- A WASM build of this library. See above.
 
 ## 11. Intent eDSL (Design Sketch)
 
-The eDSL is a **surface**, not a **semantics**. Every script it
-emits must be expressible by hand-written JSON against the same
-wallet. It may rule out malformed scripts at compile time; it must
-never rely on post-processing, runtime extension, or wallet
-features beyond the published DSL.
+A typed surface for building GameChanger scripts in Haskell, built
+on `Control.Monad.Operational`. Sits on top of `GameChanger.Script`
+and compiles to the same JSON a hand-written script would produce.
+
+It is a **surface**, not a **semantics**. Every script it emits
+must be expressible by hand-written JSON against the same wallet.
+It may rule out malformed scripts at compile time; it must never
+rely on post-processing, runtime extension, or wallet features
+beyond the published DSL.
 
 ### 11.1 Shape
 
@@ -268,30 +286,43 @@ voteOnProposal addr pid vote = do
   submitTx signed
 ```
 
+Each `<-` is a GameChanger action; each reference to a bound
+variable becomes, after compilation, a `{get('cache.<name>')}`
+expression in the emitted JSON. A typo in wiring no longer
+compiles.
+
+The encoding is `Control.Monad.Operational` deliberately. The
+compiler is a structural fold over the program — it needs to
+pattern-match on each `IntentI` constructor to emit the right
+`run`-block entry — and operational's `view` gives us that
+directly. Typeclass-indexed alternatives (final-tagless) are not
+used in this library.
+
 ### 11.2 Compilation
 
-A pure interpreter folds the `Program` into a `GameChanger.Script`:
+A pure interpreter folds a `Program IntentI a` into a
+`GameChanger.Script`:
 
-- Each primitive becomes a named entry in the `run` block (unique
-  name generated by the compiler).
+- Each primitive becomes a named entry in the `run` block.
+  Compiler-generated names are stable (hash-derived from the
+  program structure).
 - Each monadic bind becomes a `{get('<namespace>.<name>')}`
   template expression feeding the next action's `detail`.
-- The final `pure x` (or the selected return) determines the default
-  `exports` clause; additional exports may be declared with a
-  dedicated combinator (`declareExport`).
+- The final returned value (or a `declareExport` combinator) drives
+  the `exports` clause.
 
 ### 11.3 Invariants
 
-1. **Surface-only.** For every `Intent a`, there exists a handwritten
-   JSON script with identical wallet behavior.
+1. **Surface-only.** For every `Intent a`, there exists a
+   handwritten JSON script with identical wallet behavior.
 2. **Deterministic compilation.** Same `Intent` → same JSON,
    byte-for-byte (stable name generation, sorted keys where
    possible).
 3. **No runtime effects.** Compilation is pure; the compiler never
    performs network IO, signing, or key derivation.
-4. **WASM-neutral.** The compiler compiles identically under
-   native GHC and `wasm32-wasi-ghc`. No platform-specific code in
-   `GameChanger.Intent`.
+4. **Native-only.** The eDSL and its compiler target native GHC
+   against `cardano-api` / `cardano-node-clients`. No WASM target,
+   no browser deployment. See §8.
 
 ## 9. How To Use This Repository (Today)
 
@@ -322,4 +353,4 @@ updates (a) this document, (b) the `docs/` site, and (c) the
 `data/rdf/` ontology together in one vertical commit. All three are
 derivative of the same understanding and must move in lockstep.
 
-**Version:** 0.2.0 | **Ratified:** 2026-04-18 | **Last Amended:** 2026-04-19
+**Version:** 0.3.0 | **Ratified:** 2026-04-18 | **Last Amended:** 2026-04-20
