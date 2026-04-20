@@ -12,7 +12,7 @@ No domain code lands. The library exposes one placeholder module `GameChanger`. 
 
 ## Technical Context
 
-**Language/Version**: GHC 9.6.6 (pinned via haskell.nix). Rationale: recent enough to match what `cardano-api` / `cardano-node-clients` ship in lambdasistemi repos today; conservative enough that `haskell.nix` has warm caches.
+**Language/Version**: GHC 9.12.3 (pinned via haskell.nix). Rationale: latest stable; aligns with the `haskell-wasm` skill's `all_9_12` toolchain should WASM ever re-enter scope as a non-goal target for a sibling project; matches the GHC the org is moving active work onto.
 **Primary Dependencies**: `base`, `text`, `bytestring`. The skeleton library has no Cardano deps yet — those arrive per-module in later tickets.
 **Build backend**: `haskell.nix` via its flake, inputs sourced to match `cardano-utxo-csmt` / `haskell-csmt` so Cachix hits cross-repo.
 **Index**: `CHaP` (Cardano Haskell Packages) is wired in from day one — later tickets will need it and it costs nothing to include empty.
@@ -27,7 +27,7 @@ No domain code lands. The library exposes one placeholder module `GameChanger`. 
 
 | Tool       | Version            | Source                               |
 |------------|--------------------|--------------------------------------|
-| GHC        | 9.6.6              | `haskell.nix` compiler selection     |
+| GHC        | 9.12.3             | `haskell.nix` compiler selection     |
 | fourmolu   | 0.15.0.0           | `haskell.nix` tool layer             |
 | hlint      | 3.8                | `haskell.nix` tool layer             |
 | cabal-fmt  | 0.1.12             | `haskell.nix` tool layer             |

@@ -51,7 +51,7 @@ Single-package cabal project at the repo root. Haskell under `src/`, `app/`, `te
   - `devShells.default = project.shell`
   - `checks = import ./nix/checks.nix { ... }`
   - `apps = import ./nix/apps.nix { ... }`
-- [ ] T010 [-] Create `nix/project.nix` defining a `haskell.nix` `cabalProject'` pinned to GHC 9.6.6, referencing CHaP as an extra input-map, declaring the dev shell with `fourmolu`, `hlint`, `cabal-fmt`, `just`, `cabal-install` as `tools`, and using `shell.withHoogle = false` to keep startup fast.
+- [ ] T010 [-] Create `nix/project.nix` defining a `haskell.nix` `cabalProject'` pinned to GHC 9.12.3 (`compiler-nix-name = "ghc9123"`), referencing CHaP as an extra input-map, declaring the dev shell with `fourmolu`, `hlint`, `cabal-fmt`, `just`, `cabal-install` as `tools`, and using `shell.withHoogle = false` to keep startup fast.
 - [ ] T011 [-] Create `nix/checks.nix` exposing `library`, `exe`, `tests`, and `lint` (a `pkgs.writeShellApplication` running fourmolu check + cabal-fmt check + hlint across `src app test`).
 - [ ] T012 [-] Create `nix/apps.nix` wrapping the runnable checks (`exe`, `tests`, `lint`) via `pkgs.lib.getExe` so `nix run .#hgc`, `nix run .#tests`, `nix run .#lint` all work.
 - [ ] T013 [-] Run `nix flake update` once, commit the resulting `flake.lock`.
