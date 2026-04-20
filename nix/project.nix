@@ -15,7 +15,7 @@ let
     };
     withHoogle = false;
     buildInputs =
-      [ pkgs.just ]
+      [ pkgs.just pkgs.nodejs ]
       ++ dev-assets-mkdocs.devShells.${system}.default.buildInputs or [ ];
     inputsFrom = [ dev-assets-mkdocs.devShells.${system}.default ];
   };
