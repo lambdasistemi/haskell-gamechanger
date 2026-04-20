@@ -17,6 +17,7 @@ theme:
 
 nav:
   - Overview: index.md
+  - Scope: scope.md
   - Protocol: protocol.md
   - Integration: integration.md
   - Security: security.md
