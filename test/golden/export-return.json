@@ -1,0 +1,21 @@
+{
+  "type": "script",
+  "title": "Export via return",
+  "run": {
+    "result": {
+      "type": "signData",
+      "namespace": "cache",
+      "detail": {
+        "address": "addr_test1qpk...placeholder",
+        "message": "return-mode"
+      }
+    }
+  },
+  "exports": {
+    "out": {
+      "source": "{get('cache.result')}",
+      "mode": "return",
+      "returnUrl": "https://example.invalid/redirect"
+    }
+  }
+}

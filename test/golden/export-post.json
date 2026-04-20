@@ -1,0 +1,21 @@
+{
+  "type": "script",
+  "title": "Export via post",
+  "run": {
+    "result": {
+      "type": "signData",
+      "namespace": "cache",
+      "detail": {
+        "address": "addr_test1qpk...placeholder",
+        "message": "post-mode"
+      }
+    }
+  },
+  "exports": {
+    "out": {
+      "source": "{get('cache.result')}",
+      "mode": "post",
+      "postUrl": "https://example.invalid/callback"
+    }
+  }
+}

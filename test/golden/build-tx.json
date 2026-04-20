@@ -1,0 +1,32 @@
+{
+  "type": "script",
+  "title": "Build and POST a transaction",
+  "run": {
+    "u": {
+      "type": "getUTxOs",
+      "namespace": "cache",
+      "detail": {}
+    },
+    "built": {
+      "type": "buildTx",
+      "namespace": "cache",
+      "detail": {
+        "txOuts": [
+          {
+            "address": "addr_test1qpk...placeholder",
+            "value": {
+              "coin": "1000000"
+            }
+          }
+        ]
+      }
+    }
+  },
+  "exports": {
+    "cbor": {
+      "source": "{get('cache.built.tx')}",
+      "mode": "post",
+      "postUrl": "https://example.invalid/callback"
+    }
+  }
+}

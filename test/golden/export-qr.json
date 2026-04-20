@@ -1,0 +1,20 @@
+{
+  "type": "script",
+  "title": "Export via QR",
+  "run": {
+    "result": {
+      "type": "signData",
+      "namespace": "cache",
+      "detail": {
+        "address": "addr_test1qpk...placeholder",
+        "message": "qr-mode"
+      }
+    }
+  },
+  "exports": {
+    "out": {
+      "source": "{get('cache.result')}",
+      "mode": "qr"
+    }
+  }
+}

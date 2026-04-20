@@ -1,0 +1,17 @@
+{
+  "type": "script",
+  "title": "Fetch wallet UTxOs",
+  "run": {
+    "utxos": {
+      "type": "getUTxOs",
+      "namespace": "cache",
+      "detail": {}
+    }
+  },
+  "exports": {
+    "set": {
+      "source": "{get('cache.utxos')}",
+      "mode": "copy"
+    }
+  }
+}
