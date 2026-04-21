@@ -15,6 +15,7 @@ import qualified Data.Aeson.KeyMap as KeyMap
 import qualified Data.Map.Strict as Map
 import qualified Data.Text as T
 import qualified EncodingSpec
+import qualified GCScriptSpec
 import GameChanger (version)
 import GameChanger.Script
 import qualified Golden
@@ -26,6 +27,7 @@ main :: IO ()
 main = do
     goldens <- Golden.goldenTests
     encoding <- EncodingSpec.tests
+    gcscript <- GCScriptSpec.tests
     defaultMain $
         testGroup
             "haskell-gamechanger"
@@ -38,6 +40,7 @@ main = do
                 , goldens
                 ]
             , encoding
+            , gcscript
             , IntentSpec.tests
             ]
 
