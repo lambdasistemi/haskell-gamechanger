@@ -5,6 +5,10 @@
          <lastmod>1980-01-01</lastmod>
     </url>
     <url>
+         <loc>https://lambdasistemi.github.io/haskell-gamechanger/gcscript/</loc>
+         <lastmod>1980-01-01</lastmod>
+    </url>
+    <url>
          <loc>https://lambdasistemi.github.io/haskell-gamechanger/integration/</loc>
          <lastmod>1980-01-01</lastmod>
     </url>
@@ -26,6 +30,10 @@
     </url>
     <url>
          <loc>https://lambdasistemi.github.io/haskell-gamechanger/security/</loc>
+         <lastmod>1980-01-01</lastmod>
+    </url>
+    <url>
+         <loc>https://lambdasistemi.github.io/haskell-gamechanger/tutorial/</loc>
          <lastmod>1980-01-01</lastmod>
     </url>
 </urlset>
