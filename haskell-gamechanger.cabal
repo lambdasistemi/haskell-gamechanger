@@ -35,6 +35,9 @@ library
     GameChanger
     GameChanger.Encoding
     GameChanger.Encoding.LzmaAlone
+    GameChanger.GCScript
+    GameChanger.GCScript.Common
+    GameChanger.GCScript.Functions
     GameChanger.Intent
     GameChanger.Intent.Handles
     GameChanger.Script
@@ -94,6 +97,8 @@ test-suite test
   other-modules:
     Arbitrary
     EncodingSpec
+    GCScriptSpec
+    GCScriptSpec.Generators
     Golden
     IntentSpec
     IntentSpec.VoteOnProposal
@@ -103,10 +108,12 @@ test-suite test
     , base                 >=4.19   && <5
     , bytestring           >=0.11   && <0.13
     , containers           >=0.6    && <0.8
+    , directory            >=1.3    && <1.4
     , filepath             >=1.4    && <1.6
     , haskell-gamechanger
     , operational          ^>=0.2.4
     , QuickCheck           ^>=2.14
+    , scientific           >=0.3    && <0.4
     , tasty                >=1.5    && <1.6
     , tasty-golden         >=2.3    && <2.4
     , tasty-hunit          >=0.10   && <0.11
