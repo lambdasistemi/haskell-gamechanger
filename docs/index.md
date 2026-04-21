@@ -64,6 +64,9 @@ What Haskell cannot do:
 - **Designing the Haskell API?** Read
   [Intent eDSL](./intent-dsl.md) — the monadic surface that compiles
   to GameChanger scripts, native backend only.
+- **Working with the low-level AST?** Read
+  [GCScript AST](./gcscript.md) — the JSON-faithful Haskell mirror
+  of the wallet DSL, with a five-minute decode/encode tutorial.
 - **Browsing visually?** Open the
   [graph view](https://lambdasistemi.github.io/graph-browser/?repo=lambdasistemi/haskell-gamechanger)
   — the same concepts as a node-link diagram, backed by a

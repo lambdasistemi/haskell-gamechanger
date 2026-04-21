@@ -21,6 +21,7 @@ nav:
   - Protocol: protocol.md
   - Integration: integration.md
   - Security: security.md
+  - GCScript AST: gcscript.md
   - Intent eDSL: intent-dsl.md
   - Ontology: ontology.md
 
