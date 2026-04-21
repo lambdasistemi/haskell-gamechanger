@@ -54,6 +54,9 @@ What Haskell cannot do:
 - **Wondering what this library is?** Read [Scope](./scope.md) — a
   short page on what this library does, what it does not, and why
   topology 6.1 (client-only) is out of scope.
+- **Ready to use the library?** Read [Tutorial](./tutorial.md) — an
+  end-to-end walk from building a script to delivering a resolver URL
+  and receiving the wallet's response.
 - **New to GameChanger?** Read [Protocol](./protocol.md) — it covers
   the script DSL, the encoding pipeline, and export modes.
 - **Planning to integrate?** Read [Integration](./integration.md) —
