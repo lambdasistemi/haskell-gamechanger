@@ -69,6 +69,24 @@ executable hgc
 
   default-language: Haskell2010
 
+-- Throwaway probe for issue #25 Q2 (does beta wallet accept
+-- http://localhost in returnURLPattern?). Removed once Q2 is
+-- answered — see specs/007-haskell-client-cli/spec.md.
+executable q2-probe
+  import:           warnings
+  main-is:          q2-probe.hs
+  hs-source-dirs:   scripts
+  build-depends:
+    , aeson                ^>=2.2
+    , base                 >=4.19 && <5
+    , base64               ^>=1.0
+    , bytestring           >=0.11 && <0.13
+    , containers           >=0.6  && <0.8
+    , haskell-gamechanger
+    , text                 >=2.0  && <2.2
+
+  default-language: Haskell2010
+
 -- Regenerates the resolver-URL fixtures in test/fixtures/resolver-urls/
 -- from the #6 goldens in test/golden/. Run by hand (inside `nix develop`)
 -- when a #6 golden changes or a new fixture is added:
