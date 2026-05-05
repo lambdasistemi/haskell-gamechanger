@@ -74,15 +74,15 @@ The flake exposes: `packages.<system>.default` (the executable), `devShells.<sys
 
 ### User Story 5 — Docs CI stays green after the skeleton lands (Priority: P2)
 
-The existing `Docs (strict build + PR preview)` workflow continues to pass with no changes. The skeleton does not break the doc site, the surge preview deploys correctly on PRs, and `mkdocs build --strict` remains part of the PR gate set.
+The existing `Docs (strict build + PR preview)` workflow continues to pass with no changes. The skeleton does not break the doc site, the shared preview deploys correctly on PRs, and `mkdocs build --strict` remains part of the PR gate set.
 
 **Why this priority**: the current CI has exactly two jobs (Build Gate stub + Docs). This ticket replaces the Build Gate stub with real substance; it must not collaterally break Docs.
 
-**Independent Test**: open the PR for this ticket, confirm both CI checks remain green and the surge preview renders the existing site.
+**Independent Test**: open the PR for this ticket, confirm both CI checks remain green and the shared preview renders the existing site.
 
 **Acceptance Scenarios**:
 
-1. **Given** the PR for this ticket, **When** CI runs, **Then** the Docs check is green and a surge URL is posted as a sticky comment.
+1. **Given** the PR for this ticket, **When** CI runs, **Then** the Docs check is green and a shared preview URL is posted as a sticky comment.
 2. **Given** the PR is merged, **When** the deploy-docs workflow runs on main, **Then** the GitHub Pages site at `lambdasistemi.github.io/haskell-gamechanger` updates without error.
 
 ---
