@@ -124,12 +124,12 @@ Single-package cabal project at the repo root. Haskell under `src/`, `app/`, `te
 
 ## Phase 7: User Story 5 — Docs CI stays green (P2)
 
-**Goal**: the existing `deploy-docs.yml` workflow still runs and passes on the PR; the surge preview deploys as before.
+**Goal**: the existing `deploy-docs.yml` workflow still runs and passes on the PR; the shared preview deploys as before.
 
-**Independent test**: open the PR, check the `Docs (strict build + PR preview)` check and the surge sticky-comment URL.
+**Independent test**: open the PR, check the `Docs (strict build + PR preview)` check and the shared preview sticky-comment URL.
 
 - [ ] T028 [US5] Confirm `.github/workflows/deploy-docs.yml` is unchanged by this branch's diff.
-- [ ] T029 [US5] After pushing, confirm the Docs check is green on the PR and that a surge preview URL appears as a sticky comment.
+- [ ] T029 [US5] After pushing, confirm the Docs check is green on the PR and that a shared preview URL appears as a sticky comment.
 - [ ] T030 [US5] Manually browse the preview URL and verify the Scope / Intent eDSL / Protocol pages render.
 
 **Checkpoint**: Story 5 green.
